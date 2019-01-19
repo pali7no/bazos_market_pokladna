@@ -9,19 +9,29 @@ uses
      Grids, LazFileUtils, LazUtf8;
 
 type
+  tovarTyp = record
+        kod, nazov, mnozstvo: integer;
+        cenaKusNakup, cenaKusPredaj: real;
+  end;
 
   { TForm1 }
 
   TForm1 = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
+    zaplatit: TButton;
+    zobrazOvocie: TButton;
+    zobrazZelenina: TButton;
+    zobrazPecivo: TButton;
+    zobrazIne: TButton;
+    zobrazVsetko: TButton;
+    zrusitPolozku: TButton;
+    zrusitNakup: TButton;
+    Edit1: TEdit;
+    Edit2: TEdit;
     Memo1: TMemo;
-    OpenDialog1: TOpenDialog;
-    StringGrid1: TStringGrid;
+    Ponuka: TStringGrid;
+    Kosik: TStringGrid;
     procedure FormCreate(Sender: TObject);
-    procedure StringGrid1Click(Sender: TObject; Shift: TShiftState; suradnice: TPoint);
-    procedure StringGrid1MouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+    procedure PonukaClick(Sender: TObject);
   private
 
   public
@@ -30,7 +40,9 @@ type
 
 var
   Form1: TForm1;
-  sgRiadky, sgStlpce: integer;
+  Tovary: array [0..99] of tovarTyp;
+  sklad, tovar, cennik, statistiky: textFile;
+  tovarov: integer;
 
 implementation
 
@@ -39,33 +51,88 @@ implementation
 { TForm1 }
 
 procedure TForm1.FormCreate(Sender: TObject);
-begin
-     for sgStlpce:=0 to 1 do
-         for sgRiadky:=0 to 9 do
-             StringGrid1.Cells[sgStlpce,sgRiadky]:= intToStr(sgStlpce+sgRiadky+1);
-end;
-
-procedure TForm1.StringGrid1Click(Sender: TObject; Shift: TShiftState;
-  suradnice: TPoint);
-//var
-   //Col, Row: Integer;
-begin
-     Memo1.Append('Klik!');
-     StringGrid1.MouseToCell(suradnice);
-     Memo1.Append(intToStr(suradnice.x)+' '+intToStr(suradnice.y));
-     //StringGrid1.MouseToCell(X, Y, Col, Row);
-     //Memo1.Append(intToStr(Col)+' '+intToStr(Row));
-end;
-
-procedure TForm1.StringGrid1MouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
 var
-   Col, Row: Integer;
+    sgRiadky, sgStlpce, odpadInt, iTovaru, iZnaku, preskok: integer;
+    odpadChar: char;
+    odpadString, kodString, nazovString: string;
 begin
-  StringGrid1.MouseToCell(X, Y, Col, Row);
-  StringGrid1.Hint := IntToStr(Col) + '   ' + IntToStr(Row);
-  Memo1.Append(intToStr(Col)+' '+intToStr(Row));
+     //pociatocne priradenie
+     assignFile(sklad, 'SKLAD.txt');
+     assignFile(tovar, 'TOVAR.txt');
+     assignFile(cennik, 'CENNIK.txt');
+     assignFile(statistiky, 'STATISTIKY.txt');
+
+     //ideme vyplnit TStringGrid Ponuka
+     reset(sklad);
+     reset(tovar);
+     reset(cennik);
+     readLn(sklad, tovarov);
+     Memo1.Append(intToStr(tovarov)); //pomocne
+     readLn(tovar, odpadInt);
+     readLn(cennik, odpadInt);
+
+     readLn(tovar, odpadString);
+     Memo1.Append(odpadString);
+     iZnaku:= 1;
+     while(odPadString[iZnaku] <> ';') do begin
+         kodString[iZnaku]:= odpadString[iZnaku];
+         inc(iZnaku);
+     end;
+     preskok:= iZnaku;
+     inc(iZnaku); //preskakujem ;
+     for iZnaku:=iZnaku to length(odpadString) do
+         nazovString[iZnaku-preskok]:= odpadString[iZnaku];
+     Memo1.Append(kodString +' '+ nazovString);
+
+
+     //iTovaru:= 0;
+     //readLn(tovar,
+     //             Tovary[iTovaru].kod,
+     //             odpadChar,
+     //             Tovary[iTovaru].nazov);
+     //Memo1.Append(intToStr(Tovary[iTovaru].kod)+ ' '
+     //             +intToStr(Tovary[iTovaru].nazov));
+
+     //Memo1.Append(intToStr(odpadInt));
+     //for iTovaru:=0 to tovarov-1 do begin
+     //    read(tovar,Tovary[iTovaru].kod);
+     //    read(tovar, odpadChar); //bodkociarka
+     //    read(tovar, Tovary[iTovaru].nazov);
+     //    Memo1.Append(intToStr(Tovary[iTovaru].kod)+ ' '
+     //        +intToStr(Tovary[iTovaru].nazov));
+     //end;
+
+
+     //testy
+     //for sgStlpce:=0 to 3 do
+     //    for sgRiadky:=1 to 9 do
+     //        Ponuka.Cells[sgStlpce,sgRiadky]:= intToStr(sgStlpce+sgRiadky+1);
 end;
+
+procedure TForm1.PonukaClick(Sender: TObject);
+var
+   Column, Row: Integer;
+   //MousePoint: TPoint;
+begin
+     {Memo1.Append('Klik!');
+     suradnice := Mouse.CursorPos;
+     suradnice := ScreenToClient(suradnice);
+     //Ponuka.MouseToCell(suradnice);
+     Memo1.Append(intToStr(suradnice.x)+' '+intToStr(suradnice.y));
+     //Ponuka.MouseToCell(X, Y, Col, Row);
+     //Memo1.Append(intToStr(Col)+' '+intToStr(Row));
+     }
+     //MousePoint := Ponuka.ClientToScreen(Point(X, Y));
+     //X:= MousePoint.x;
+     //Y:= MousePoint.y;
+     //Ponuka.MouseToCell(X, Y, Column, Row);
+     //Ponuka.Cells[Column, Row] := 'Col ' + IntToStr(Column) + ',Row ' +
+     //IntToStr(Row);
+     Column:= Ponuka.Col;
+     Row:= Ponuka.Row;
+     Memo1.Append(intToStr(Column)+' '+intToStr(Row));
+end;
+
 
 end.
 //pokus pokus pokus dis dis

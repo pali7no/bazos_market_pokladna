@@ -1,0 +1,182 @@
+object Form1: TForm1
+  Left = 401
+  Height = 572
+  Top = 126
+  Width = 739
+  Caption = 'Pokladna'
+  ClientHeight = 572
+  ClientWidth = 739
+  OnCreate = FormCreate
+  LCLVersion = '1.4.0.4'
+  object Ponuka: TStringGrid
+    Left = 16
+    Height = 248
+    Top = 72
+    Width = 480
+    ColCount = 4
+    Columns = <    
+      item
+        Title.Caption = 'názov'
+        Width = 285
+      end    
+      item
+        Title.Caption = 'kód'
+        Width = 65
+      end    
+      item
+        Title.Caption = 'cena'
+        Width = 67
+      end    
+      item
+        Title.Caption = 'skladom'
+        Width = 52
+      end>
+    DefaultColWidth = 150
+    FixedCols = 0
+    ParentShowHint = False
+    RowCount = 10
+    ShowHint = True
+    TabOrder = 0
+    OnClick = PonukaClick
+    ColWidths = (
+      285
+      65
+      67
+      52
+    )
+  end
+  object zobrazOvocie: TButton
+    Left = 24
+    Height = 25
+    Top = 24
+    Width = 75
+    Caption = 'Ovocie'
+    TabOrder = 1
+  end
+  object zobrazZelenina: TButton
+    Left = 128
+    Height = 25
+    Top = 24
+    Width = 75
+    Caption = 'Zelenina'
+    TabOrder = 2
+  end
+  object Memo1: TMemo
+    Left = 16
+    Height = 162
+    Top = 344
+    Width = 150
+    Lines.Strings = (
+      'Memo1'
+    )
+    TabOrder = 3
+  end
+  object zobrazPecivo: TButton
+    Left = 224
+    Height = 25
+    Top = 24
+    Width = 75
+    Caption = 'Pecivo'
+    TabOrder = 4
+  end
+  object zobrazIne: TButton
+    Left = 320
+    Height = 25
+    Top = 24
+    Width = 75
+    Caption = 'Ine'
+    TabOrder = 5
+  end
+  object zobrazVsetko: TButton
+    Left = 412
+    Height = 25
+    Top = 24
+    Width = 75
+    Caption = 'Vsetko'
+    TabOrder = 6
+  end
+  object Edit1: TEdit
+    Left = 24
+    Height = 21
+    Top = 0
+    Width = 120
+    TabOrder = 7
+    Text = 'vyhlPodlaKodu'
+  end
+  object Edit2: TEdit
+    Left = 152
+    Height = 21
+    Top = 0
+    Width = 120
+    TabOrder = 8
+    Text = 'vyhlPodlaNazvu'
+  end
+  object Kosik: TStringGrid
+    Left = 520
+    Height = 248
+    Top = 72
+    Width = 480
+    ColCount = 3
+    Columns = <    
+      item
+        Title.Caption = 'názov'
+        Width = 285
+      end    
+      item
+        Title.Caption = 'cena'
+        Width = 52
+      end    
+      item
+        Title.Caption = 'počet'
+        Width = 67
+      end>
+    DefaultColWidth = 150
+    FixedCols = 0
+    ParentShowHint = False
+    RowCount = 10
+    ShowHint = True
+    TabOrder = 9
+    OnClick = PonukaClick
+    ColWidths = (
+      285
+      52
+      67
+    )
+    Cells = (
+      3
+      0
+      0
+      'názov'
+      1
+      0
+      'počet'
+      2
+      0
+      'cena'
+    )
+  end
+  object zrusitPolozku: TButton
+    Left = 536
+    Height = 25
+    Top = 24
+    Width = 75
+    Caption = 'zrusitPolozku'
+    TabOrder = 10
+  end
+  object zrusitNakup: TButton
+    Left = 680
+    Height = 25
+    Top = 24
+    Width = 75
+    Caption = 'zrusitNakup'
+    TabOrder = 11
+  end
+  object zaplatit: TButton
+    Left = 584
+    Height = 25
+    Top = 352
+    Width = 75
+    Caption = 'zaplatit'
+    TabOrder = 12
+  end
+end
