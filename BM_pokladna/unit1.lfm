@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 401
+  Left = 357
   Height = 572
-  Top = 126
+  Top = 124
   Width = 739
   Caption = 'Pokladna'
   ClientHeight = 572
@@ -61,23 +61,13 @@ object Form1: TForm1
     Caption = 'Zelenina'
     TabOrder = 2
   end
-  object Memo1: TMemo
-    Left = 16
-    Height = 162
-    Top = 344
-    Width = 150
-    Lines.Strings = (
-      'Memo1'
-    )
-    TabOrder = 3
-  end
   object zobrazPecivo: TButton
     Left = 224
     Height = 25
     Top = 24
     Width = 75
     Caption = 'Pecivo'
-    TabOrder = 4
+    TabOrder = 3
   end
   object zobrazIne: TButton
     Left = 320
@@ -85,7 +75,7 @@ object Form1: TForm1
     Top = 24
     Width = 75
     Caption = 'Ine'
-    TabOrder = 5
+    TabOrder = 4
   end
   object zobrazVsetko: TButton
     Left = 412
@@ -93,14 +83,14 @@ object Form1: TForm1
     Top = 24
     Width = 75
     Caption = 'Vsetko'
-    TabOrder = 6
+    TabOrder = 5
   end
   object Edit1: TEdit
     Left = 24
     Height = 21
     Top = 0
     Width = 120
-    TabOrder = 7
+    TabOrder = 6
     Text = 'vyhlPodlaKodu'
   end
   object Edit2: TEdit
@@ -108,7 +98,7 @@ object Form1: TForm1
     Height = 21
     Top = 0
     Width = 120
-    TabOrder = 8
+    TabOrder = 7
     Text = 'vyhlPodlaNazvu'
   end
   object Kosik: TStringGrid
@@ -135,7 +125,7 @@ object Form1: TForm1
     ParentShowHint = False
     RowCount = 10
     ShowHint = True
-    TabOrder = 9
+    TabOrder = 8
     OnClick = PonukaClick
     ColWidths = (
       285
@@ -161,7 +151,7 @@ object Form1: TForm1
     Top = 24
     Width = 75
     Caption = 'zrusitPolozku'
-    TabOrder = 10
+    TabOrder = 9
   end
   object zrusitNakup: TButton
     Left = 680
@@ -169,7 +159,7 @@ object Form1: TForm1
     Top = 24
     Width = 75
     Caption = 'zrusitNakup'
-    TabOrder = 11
+    TabOrder = 10
   end
   object zaplatit: TButton
     Left = 584
@@ -177,6 +167,16 @@ object Form1: TForm1
     Top = 352
     Width = 75
     Caption = 'zaplatit'
+    TabOrder = 11
+  end
+  object Memo1: TMemo
+    Left = 40
+    Height = 90
+    Top = 352
+    Width = 150
+    Lines.Strings = (
+      'Memo1'
+    )
     TabOrder = 12
   end
 end

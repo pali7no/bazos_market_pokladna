@@ -7,16 +7,21 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
      Grids, LazFileUtils, LazUtf8;
+const
+  preskokKod = 5;
 
 type
   tovarTyp = record
-        kod, nazov, mnozstvo: integer;
+        kod, mnozstvo: integer;
         cenaKusNakup, cenaKusPredaj: real;
+        nazov: string;
   end;
+
 
   { TForm1 }
 
   TForm1 = class(TForm)
+    Memo1: TMemo;
     zaplatit: TButton;
     zobrazOvocie: TButton;
     zobrazZelenina: TButton;
@@ -27,14 +32,15 @@ type
     zrusitNakup: TButton;
     Edit1: TEdit;
     Edit2: TEdit;
-    Memo1: TMemo;
     Ponuka: TStringGrid;
     Kosik: TStringGrid;
     procedure FormCreate(Sender: TObject);
     procedure PonukaClick(Sender: TObject);
+    procedure NacitanieTovarTxt;
   private
 
   public
+
 
   end;
 
@@ -50,11 +56,39 @@ implementation
 
 { TForm1 }
 
+procedure TForm1.nacitanieTovarTxt(iTovaru: integer);
+var
+   kodNazovString, kodString, nazovString: string;
+   iZnaku: integer;
+begin
+    readLn(tovar, kodNazovString);
+
+    kodString:= '9999';
+    nazovString:= 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+    iZnaku:= 1;
+    while(kodNazovString[iZnaku] <> ';') do begin
+        kodString[iZnaku]:= kodNazovString[iZnaku];
+        inc(iZnaku);
+    end;
+
+    for iZnaku:=preskokKod+1 to length(kodNazovString) do
+        nazovString[iZnaku-preskokKod]:= kodNazovString[iZnaku];
+    delete(nazovString, iZnaku-preskokKod+1, length(nazovString) - (iZnaku-preskokKod));
+    Form1.Memo1.Append(kodString +' '+ nazovString); //test
+
+    Form1.Memo1.Append('SIGSEGV' +kodString);
+    Tovary[iTovaru].kod:= strToInt(kodString);
+    Tovary[iTovaru].nazov:= nazovString;
+    Form1.Ponuka.Cells[0, iTovaru+1]:= Tovary[iTovaru].nazov;
+    Form1.Ponuka.Cells[1, iTovaru+1]:= intToStr(Tovary[iTovaru].kod);
+end;
+
+
 procedure TForm1.FormCreate(Sender: TObject);
 var
-    sgRiadky, sgStlpce, odpadInt, iTovaru, iZnaku, preskok: integer;
+    sgRiadky, sgStlpce, odpadInt, iTovaru, iZnaku: integer;
     odpadChar: char;
-    odpadString, kodString, nazovString: string;
+    odpadString, kodString, nazovString, kodNazovString: string;
 begin
      //pociatocne priradenie
      assignFile(sklad, 'SKLAD.txt');
@@ -71,19 +105,23 @@ begin
      readLn(tovar, odpadInt);
      readLn(cennik, odpadInt);
 
-     readLn(tovar, odpadString);
-     Memo1.Append(odpadString);
-     iZnaku:= 1;
-     while(odPadString[iZnaku] <> ';') do begin
-         kodString[iZnaku]:= odpadString[iZnaku];
-         inc(iZnaku);
-     end;
-     preskok:= iZnaku;
-     inc(iZnaku); //preskakujem ;
-     for iZnaku to length(odpadString) do
-         nazovString[iZnaku-preskok]:= odpadString[iZnaku];
-     Memo1.Append(kodString +' '+ nazovString);
-
+     //readLn(tovar, odpadString);
+     //Memo1.Append(odpadString);
+     //kodString:= '9999';
+     //nazovString:= 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+     //iZnaku:= 1;
+     //while(odPadString[iZnaku] <> ';') do begin
+     //    kodString[iZnaku]:= odpadString[iZnaku];
+     //    inc(iZnaku);
+     //end;
+     //preskokKod:= 5;
+     //
+     //Memo1.Append(intToStr(iZnaku));
+     //for iZnaku:=6 to length(odpadString) do
+     //    nazovString[iZnaku-preskokKod]:= odpadString[iZnaku];
+     //delete(nazovString, iZnaku-preskokKod+1, length(nazovString) - (iZnaku-preskokKod));
+     //Memo1.Append(kodString +' '+ nazovString);
+     //
 
      //iTovaru:= 0;
      //readLn(tovar,
@@ -94,13 +132,15 @@ begin
      //             +intToStr(Tovary[iTovaru].nazov));
 
      //Memo1.Append(intToStr(odpadInt));
-     //for iTovaru:=0 to tovarov-1 do begin
-     //    read(tovar,Tovary[iTovaru].kod);
-     //    read(tovar, odpadChar); //bodkociarka
-     //    read(tovar, Tovary[iTovaru].nazov);
-     //    Memo1.Append(intToStr(Tovary[iTovaru].kod)+ ' '
-     //        +intToStr(Tovary[iTovaru].nazov));
-     //end;
+     for iTovaru:=0 to tovarov-1 do begin
+         nacitanieTovarTxt(iTovaru);
+
+         //read(tovar,Tovary[iTovaru].kod);
+         //read(tovar, odpadChar); //bodkociarka
+         //read(tovar, Tovary[iTovaru].nazov);
+         //Memo1.Append(intToStr(Tovary[iTovaru].kod)+ ' '
+         //    +intToStr(Tovary[iTovaru].nazov));
+     end;
 
 
      //testy
@@ -132,7 +172,6 @@ begin
      Row:= Ponuka.Row;
      Memo1.Append(intToStr(Column)+' '+intToStr(Row));
 end;
-
 
 end.
 //pokus pokus pokus dis dis
