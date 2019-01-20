@@ -4,8 +4,9 @@ object Form1: TForm1
   Top = 124
   Width = 739
   Caption = 'Pokladna'
-  ClientHeight = 572
+  ClientHeight = 553
   ClientWidth = 739
+  Menu = Lista
   OnCreate = FormCreate
   LCLVersion = '1.4.0.4'
   object Ponuka: TStringGrid
@@ -178,5 +179,26 @@ object Form1: TForm1
       'Memo1'
     )
     TabOrder = 12
+  end
+  object Lista: TMainMenu
+    left = 234
+    top = 361
+    object MenuItem5: TMenuItem
+      Caption = 'Odhlas pokladnika'
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'vyhladaj'
+      OnClick = MenuItem2Click
+      object MenuItem3: TMenuItem
+        Caption = 'podla kodu'
+      end
+      object MenuItem4: TMenuItem
+        Caption = 'podla nazvu'
+      end
+    end
+    object MenuItem1: TMenuItem
+      Caption = 'koniec'
+      OnClick = MenuItem1Click
+    end
   end
 end
