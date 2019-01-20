@@ -46,7 +46,7 @@ type
     procedure PonukaClick(Sender: TObject);
     procedure NacitaniePolozkyTOVARtxt(iTovaru: integer);
     procedure NacitaniePolozkySKLADtxt(iTovaru: integer);
-    //procedure NacitaniePolozkyCENNIKtxt(iTovaru: integer);
+    procedure NacitaniePolozkyCENNIKtxt(iTovaru: integer);
   private
 
   public
@@ -90,7 +90,8 @@ begin
      //Memo1.Append(intToStr(odpadInt));
      for iTovaru:=0 to tovarov-1 do begin
          NacitaniePolozkyTOVARtxt(iTovaru);
-
+         NacitaniePolozkySKLADtxt(iTovaru);
+         NacitaniePolozkyCENNIKtxt(iTovaru);
      end;
 
 
@@ -152,6 +153,46 @@ begin
     //Form1.Ponuka.Cells[1, iTovaru+1]:= intToStr(Tovary[iTovaru].kod);
     Tovary[iTovaru].mnozstvo:= strToInt(mnozstvoString);
     Form1.Ponuka.Cells[3, iTovaru+1]:= intToStr(Tovary[iTovaru].mnozstvo);
+end;
+
+procedure TForm1.NacitaniePolozkyCENNIKtxt(iTovaru: integer);
+var
+   cennikRiadok, kodString, cenaKusNakupString, cenaKusPredajString: string;
+   iZnaku, preskokCennik2: integer;
+begin
+    readLn(cennik, cennikRiadok);
+
+    kodString:= '9999';
+    cenaKusNakupString:= '99999999999999';
+    cenaKusPredajString:= '99999999999999';
+    iZnaku:= 1;
+    while(cennikRiadok[iZnaku] <> ';') do begin
+        kodString[iZnaku]:= cennikRiadok[iZnaku];
+        inc(iZnaku);
+    end;
+
+    inc(iZnaku); //skipujeme ;
+    while(cennikRiadok[iZnaku] <> ';') do begin
+        cenaKusNakupString[iZnaku-preskokKod]:= cennikRiadok[iZnaku];
+        inc(iZnaku);
+    end;
+
+    preskokCennik2:= iZnaku; //sme na ;
+    inc(iZnaku); //skipujeme ;
+    for iZnaku:=iZnaku to length(cennikRiadok) do begin
+        cenaKusPredajString[iZnaku-preskokCennik2]:= cennikRiadok[iZnaku];
+    end;
+    //for iZnaku:=preskokKod+1 to length(cennikRiadok) do
+    //    cenaKusNakupString[iZnaku-preskokKod]:= cennikRiadok[iZnaku];
+    //delete(cenaKusNakupString, iZnaku-preskokKod+1, length(cenaKusNakupString) - (iZnaku-preskokKod));
+    //Form1.Memo1.Append(kodString +' '+ cenaKusNakupString); //test
+
+    //nie je nutne, lebo uz je priradene
+    //Tovary[iTovaru].kod:= strToInt(kodString);
+    //Form1.Ponuka.Cells[1, iTovaru+1]:= intToStr(Tovary[iTovaru].kod);
+    Tovary[iTovaru].cenaKusNakup:= strToFloat(cenaKusNakupString);
+    Tovary[iTovaru].cenaKusPredaj:= strToFloat(cenaKusPredajString);
+    Form1.Ponuka.Cells[2, iTovaru+1]:= floatToStr(Tovary[iTovaru].cenaKusPredaj);
 end;
 
 procedure TForm1.PonukaClick(Sender: TObject);
