@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 357
+  Left = 466
   Height = 572
-  Top = 124
+  Top = 67
   Width = 739
   Caption = 'Pokladna'
   ClientHeight = 553
@@ -11,7 +11,7 @@ object Form1: TForm1
   LCLVersion = '1.4.0.4'
   object Ponuka: TStringGrid
     Left = 16
-    Height = 248
+    Height = 208
     Top = 72
     Width = 480
     ColCount = 4
@@ -30,7 +30,7 @@ object Form1: TForm1
       end    
       item
         Title.Caption = 'skladom'
-        Width = 52
+        Width = 59
       end>
     DefaultColWidth = 150
     FixedCols = 0
@@ -43,7 +43,7 @@ object Form1: TForm1
       285
       65
       67
-      52
+      59
     )
   end
   object zobrazOvocie: TButton
@@ -52,6 +52,7 @@ object Form1: TForm1
     Top = 24
     Width = 75
     Caption = 'Ovocie'
+    OnClick = zobrazOvocieClick
     TabOrder = 1
   end
   object zobrazZelenina: TButton
@@ -104,9 +105,9 @@ object Form1: TForm1
   end
   object Kosik: TStringGrid
     Left = 520
-    Height = 248
+    Height = 208
     Top = 72
-    Width = 480
+    Width = 408
     ColCount = 3
     Columns = <    
       item
@@ -163,9 +164,9 @@ object Form1: TForm1
     TabOrder = 10
   end
   object zaplatit: TButton
-    Left = 584
+    Left = 616
     Height = 25
-    Top = 352
+    Top = 312
     Width = 75
     Caption = 'zaplatit'
     TabOrder = 11

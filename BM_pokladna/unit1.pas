@@ -47,6 +47,8 @@ type
     procedure NacitaniePolozkyTOVARtxt(iTovaru: integer);
     procedure NacitaniePolozkySKLADtxt(iTovaru: integer);
     procedure NacitaniePolozkyCENNIKtxt(iTovaru: integer);
+    procedure VycistiPonuku;
+    procedure zobrazOvocieClick(Sender: TObject);
   private
 
   public
@@ -186,17 +188,36 @@ begin
     end;
     delete(cenaKusPredajString, iZnaku-preskokCennik2+1,
            length(cenaKusPredajString) - (iZnaku-preskokCennik2));
-    //for iZnaku:=preskokKod+1 to length(cennikRiadok) do
-    //    cenaKusNakupString[iZnaku-preskokKod]:= cennikRiadok[iZnaku];
-    //delete(cenaKusNakupString, iZnaku-preskokKod+1, length(cenaKusNakupString) - (iZnaku-preskokKod));
-    //Form1.Memo1.Append(kodString +' '+ cenaKusNakupString); //test
 
-    //nie je nutne, lebo uz je priradene
-    //Tovary[iTovaru].kod:= strToInt(kodString);
-    //Form1.Ponuka.Cells[1, iTovaru+1]:= intToStr(Tovary[iTovaru].kod);
     Tovary[iTovaru].cenaKusNakup:= strToFloat(cenaKusNakupString);
     Tovary[iTovaru].cenaKusPredaj:= strToFloat(cenaKusPredajString);
     Form1.Ponuka.Cells[2, iTovaru+1]:= floatToStr(Tovary[iTovaru].cenaKusPredaj);
+end;
+
+procedure TForm1.VycistiPonuku;
+var
+   iStlpca, iRiadku: integer;
+begin
+    for iStlpca:=0 to Ponuka.ColCount-1 do
+        for iRiadku:= 1 to Ponuka.RowCount-1 do
+            Ponuka.Cells[iStlpca, iRiadku]:= '';
+end;
+
+procedure TForm1.zobrazOvocieClick(Sender: TObject);
+var
+   iTovaru,iRiadku: integer;
+begin
+    VycistiPonuku;
+    iRiadku:= 1;
+    for iTovaru:=0 to tovarov-1 do begin
+        if (Tovary[iTovaru].kod div 1000 = 1) then begin
+           Ponuka.Cells[0, iRiadku]:= Tovary[iTovaru].nazov;
+           Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
+           Ponuka.Cells[2, iRiadku]:= floatToStr(Tovary[iTovaru].cenaKusPredaj);
+           Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
+           inc(iRiadku);
+        end;
+    end;
 end;
 
 procedure TForm1.PonukaClick(Sender: TObject);
