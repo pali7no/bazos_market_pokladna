@@ -1,18 +1,18 @@
 object Form1: TForm1
-  Left = 466
+  Left = 399
   Height = 572
-  Top = 67
-  Width = 739
+  Top = 120
+  Width = 946
   Caption = 'Pokladna'
-  ClientHeight = 553
-  ClientWidth = 739
+  ClientHeight = 552
+  ClientWidth = 946
   Menu = Lista
   OnCreate = FormCreate
   LCLVersion = '1.4.0.4'
   object Ponuka: TStringGrid
     Left = 16
-    Height = 208
-    Top = 72
+    Height = 224
+    Top = 64
     Width = 480
     ColCount = 4
     Columns = <    
@@ -56,40 +56,44 @@ object Form1: TForm1
     TabOrder = 1
   end
   object zobrazZelenina: TButton
-    Left = 128
+    Left = 104
     Height = 25
     Top = 24
     Width = 75
     Caption = 'Zelenina'
+    OnClick = zobrazZeleninaClick
     TabOrder = 2
   end
   object zobrazPecivo: TButton
-    Left = 224
+    Left = 184
     Height = 25
     Top = 24
     Width = 75
     Caption = 'Pecivo'
+    OnClick = zobrazPecivoClick
     TabOrder = 3
   end
   object zobrazIne: TButton
-    Left = 320
+    Left = 264
     Height = 25
     Top = 24
     Width = 75
     Caption = 'Ine'
+    OnClick = zobrazIneClick
     TabOrder = 4
   end
   object zobrazVsetko: TButton
-    Left = 412
+    Left = 344
     Height = 25
     Top = 24
     Width = 75
     Caption = 'Vsetko'
+    OnClick = zobrazVsetkoClick
     TabOrder = 5
   end
   object Edit1: TEdit
     Left = 24
-    Height = 21
+    Height = 23
     Top = 0
     Width = 120
     TabOrder = 6
@@ -97,22 +101,22 @@ object Form1: TForm1
   end
   object Edit2: TEdit
     Left = 152
-    Height = 21
+    Height = 23
     Top = 0
     Width = 120
     TabOrder = 7
     Text = 'vyhlPodlaNazvu'
   end
   object Kosik: TStringGrid
-    Left = 520
-    Height = 208
-    Top = 72
-    Width = 408
-    ColCount = 3
+    Left = 512
+    Height = 224
+    Top = 64
+    Width = 400
+    ColCount = 4
     Columns = <    
       item
         Title.Caption = 'názov'
-        Width = 285
+        Width = 181
       end    
       item
         Title.Caption = 'cena'
@@ -121,6 +125,10 @@ object Form1: TForm1
       item
         Title.Caption = 'počet'
         Width = 67
+      end    
+      item
+        Title.Caption = 'spolu'
+        Width = 92
       end>
     DefaultColWidth = 150
     FixedCols = 0
@@ -130,21 +138,25 @@ object Form1: TForm1
     TabOrder = 8
     OnClick = PonukaClick
     ColWidths = (
-      285
+      181
       52
       67
+      92
     )
     Cells = (
-      3
+      4
       0
       0
       'názov'
       1
       0
-      'počet'
+      'cena'
       2
       0
-      'cena'
+      'pocet'
+      3
+      0
+      'spolu'
     )
   end
   object zrusitPolozku: TButton
