@@ -13,7 +13,8 @@ const
 type
   tovarTyp = record
         //iVPonuke zatial nie je nutne, ale funguje a moze sa zist
-        kod, mnozstvo, iVTabulke: integer; //iVPonuke = -1 => nie je v Ponuke
+        //asi je nutne ;)
+        kod, mnozstvo, iVPonuke, iVKosiku: integer; //iVPonuke = -1 => nie je v Ponuke
         cenaKusNakup, cenaKusPredaj, cenaSpolu: real;
         nazov: string;
   end;
@@ -83,7 +84,10 @@ begin
     //pociatocna inicializacia
     kupenychTovarov:= 0;
      //iVPonuke = -1 => nie je v Ponuke
-     for odpadInt:=0 to 99 do Tovary[odpadInt].iVTabulke:= -1;
+     for odpadInt:=0 to 99 do begin
+         Tovary[odpadInt].iVPonuke:= -1;
+         Tovary[odpadInt].iVKosiku:= -1;
+     end;
 
      //pociatocne priradenie
      assignFile(sklad, 'SKLAD.txt');
@@ -105,7 +109,7 @@ begin
          NacitaniePolozkyTOVARtxt(iTovaru);
          NacitaniePolozkySKLADtxt(iTovaru);
          NacitaniePolozkyCENNIKtxt(iTovaru);
-         Tovary[iTovaru].iVTabulke:= iTovaru+1; //0. riadok - hlavicka tabulky
+         Tovary[iTovaru].iVPonuke:= iTovaru+1; //0. riadok - hlavicka tabulky
      end;
 
 
@@ -220,7 +224,7 @@ begin
     end;
 
     //-1 => nie je v Ponuka
-    for iTovaru:=0 to tovarov-1 do Tovary[iTovaru].iVTabulke:= -1;
+    for iTovaru:=0 to tovarov-1 do Tovary[iTovaru].iVPonuke:= -1;
 end;
 
 procedure TForm1.ZobrazJedenDruh(druh: integer);
@@ -235,7 +239,7 @@ begin
            Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
            Ponuka.Cells[2, iRiadku]:= floatToStr(Tovary[iTovaru].cenaKusPredaj);
            Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
-           Tovary[iTovaru].iVTabulke:= iRiadku;
+           Tovary[iTovaru].iVPonuke:= iRiadku;
            inc(iRiadku);
         end;
     end;
@@ -271,7 +275,7 @@ begin
         Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
         Ponuka.Cells[2, iRiadku]:= floatToStr(Tovary[iTovaru].cenaKusPredaj);
         Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
-        Tovary[iTovaru].iVTabulke:= iRiadku;
+        Tovary[iTovaru].iVPonuke:= iRiadku;
     end;
 end;
 
@@ -283,54 +287,89 @@ end;
 
 procedure TForm1.PonukaClick(Sender: TObject);
 var
-   iStlpca, iRiadku, iKupovaneho, iTovaru: Integer;
+   iStlpca, iRiadku, iVybratehoVTovary, iVybratehoVPKosik, iTovaru
+     , ziadaneMnozstvo: Integer;
    inputRiadok: string;
+   novyTovar: boolean;
 begin
      //testy
-     iStlpca:= Ponuka.Col;
-     iRiadku:= Ponuka.Row;
-     Memo1.Append(intToStr(iStlpca)+' '+intToStr(iRiadku));
+     //iStlpca:= Ponuka.Col;
+     //iRiadku:= Ponuka.Row;
+     //Memo1.Append(intToStr(iStlpca)+' '+intToStr(iRiadku));
 
-     ////easy vyberanie z vsetkeho
-     //iKupovaneho:= iRiadku-1;
-     ////ak 0, tak chcem zapisat na 0. miesto
-     //PKosik[kupenychTovarov]:= Tovary[iKupovaneho];
+     //hard vyberanie
+     iRiadku:= Ponuka.Row;
+
+     //najdenie tovaru v Tovary[] a PKosik[]
+     iTovaru:= 0;
+     while(Tovary[iTovaru].iVPonuke <> iRiadku) do inc(iTovaru);
+     iVybratehoVTovary:= iTovaru;
+
+     if (Tovary[iVybratehoVTovary].iVKosiku = -1) then begin //este nekupene
+        novyTovar:= true;
+        iVybratehoVPKosik:= kupenychTovarov; //novy riadok
+        Tovary[iVybratehoVTovary].iVKosiku:= iVybratehoVPKosik;
+     end else begin
+        novyTovar:= false;
+        iVybratehoVPKosik:= Tovary[iVybratehoVTovary].iVKosiku;
+     end;
+
+     ziadaneMnozstvo:= strToInt(inputbox(
+        PKosik[iVybratehoVPKosik].nazov, 'Zadajte mnozstvo:', inputRiadok));
+     if (ziadaneMnozstvo > Tovary[iVybratehoVTovary].mnozstvo) then begin
+        showMessage('Na sklade mame iba'
+                  +intToStr(Tovary[iVybratehoVTovary].mnozstvo) +' '
+                  +Tovary[iVybratehoVTovary].nazov);
+        exit;
+     end;
+
+     //Tovary[iVybratehoVTovary] => PKosik[iVybratehoVPKosik]
+     //osetreny pripad noveho i stareho tovaru
+     PKosik[iVybratehoVPKosik].nazov:= Tovary[iVybratehoVTovary].nazov;
+     PKosik[iVybratehoVPKosik].kod:= Tovary[iVybratehoVTovary].kod;
+     PKosik[iVybratehoVPKosik].cenaKusPredaj:= Tovary[iVybratehoVTovary].cenaKusPredaj;
+     PKosik[iVybratehoVPKosik].iVPonuke:= iVybratehoVPKosik + 1;
+     PKosik[iVybratehoVPKosik].cenaKusNakup:= -1; //nepotrebujeme
+     PKosik[iVybratehoVPKosik].mnozstvo:= PKosik[iVybratehoVPKosik].mnozstvo +
+                                          ziadaneMnozstvo;
+     PKosik[iVybratehoVPKosik].cenaSpolu:= PKosik[iVybratehoVPKosik].cenaSpolu +
+                  (PKosik[iVybratehoVPKosik].cenaKusPredaj * ziadaneMnozstvo);
+
+     //odratanie v Tovary[iVybratehoVTovary] a v Ponuke
+     Tovary[iVybratehoVTovary].mnozstvo:= Tovary[iVybratehoVTovary].mnozstvo
+                                          - ziadaneMnozstvo;
+     Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iVybratehoVTovary].mnozstvo);
+
+     //testy
+     Memo1.Clear;
+     Memo1.Append(intToStr(PKosik[iVybratehoVPKosik].mnozstvo)
+         +' '+ floatToStr(PKosik[iVybratehoVPKosik].cenaSpolu));
+
+     ////hard verzia
      ////na 0. riadku nadpisy
      //Kosik.Cells[0, kupenychTovarov+1]:= PKosik[kupenychTovarov].nazov;
      //Kosik.Cells[1, kupenychTovarov+1]:=
      //               floatToStr(PKosik[kupenychTovarov].cenaKusPredaj);
+     //Kosik.Cells[2, kupenychTovarov+1]:=
+     //               intToStr(PKosik[kupenychTovarov].mnozstvo);
+     //Kosik.Cells[3, kupenychTovarov+1]:=
+     //               floatToStr(PKosik[kupenychTovarov].cenaSpolu);
+     //
      //inc(kupenychTovarov);
 
-     //hard vyberanie
-     iTovaru:= 0;
-     while(Tovary[iTovaru].iVTabulke <> iRiadku) do inc(iTovaru);
-     iKupovaneho:= iTovaru;
-     //PKosik[kupenychTovarov]:= Tovary[iKupovaneho];
-     PKosik[kupenychTovarov].nazov:= Tovary[iKupovaneho].nazov;
-     PKosik[kupenychTovarov].kod:= Tovary[iKupovaneho].kod;
-     PKosik[kupenychTovarov].cenaKusPredaj:= Tovary[iKupovaneho].cenaKusPredaj;
-     PKosik[kupenychTovarov].iVTabulke:= kupenychTovarov + 1;
-     PKosik[kupenychTovarov].cenaKusNakup:= -1; //nepotrebujeme
-     PKosik[kupenychTovarov].mnozstvo:= strToInt(inputbox(
-        PKosik[kupenychTovarov].nazov, 'Zadajte mnozstvo:', inputRiadok));
-     PKosik[kupenychTovarov].cenaSpolu:= PKosik[kupenychTovarov].cenaKusPredaj
-                                         * PKosik[kupenychTovarov].mnozstvo;
+     //hard hard verzia (2 rovnake tovar => 1 riadok)
+     //+1 lebo fixed riadok (nadpisy)
+     Kosik.Cells[0, iVybratehoVPKosik+1]:= PKosik[iVybratehoVPKosik].nazov;
+     Kosik.Cells[1, iVybratehoVPKosik+1]:=
+                    floatToStr(PKosik[iVybratehoVPKosik].cenaKusPredaj);
+     Kosik.Cells[2, iVybratehoVPKosik+1]:=
+                    intToStr(PKosik[iVybratehoVPKosik].mnozstvo);
+     Kosik.Cells[3, iVybratehoVPKosik+1]:=
+                    floatToStr(PKosik[iVybratehoVPKosik].cenaSpolu);
 
-     //a:= strToInt(inputbox('','',r));
-     //na 0. riadku nadpisy
-     Kosik.Cells[0, kupenychTovarov+1]:= PKosik[kupenychTovarov].nazov;
-     Kosik.Cells[1, kupenychTovarov+1]:=
-                    floatToStr(PKosik[kupenychTovarov].cenaKusPredaj);
-     Kosik.Cells[2, kupenychTovarov+1]:=
-                    intToStr(PKosik[kupenychTovarov].mnozstvo);
-     Kosik.Cells[3, kupenychTovarov+1]:=
-                    floatToStr(PKosik[kupenychTovarov].cenaSpolu);
-
-     inc(kupenychTovarov);
-
-
-
-
+     if (novyTovar = true) then begin
+         inc(kupenychTovarov);
+     end;
 end;
 
 procedure TForm1.MenuItem1Click(Sender: TObject);
@@ -346,3 +385,4 @@ end;
 end.
 
 //linux test!!!
+//blabla

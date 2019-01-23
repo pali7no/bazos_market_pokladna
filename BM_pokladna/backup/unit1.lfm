@@ -184,9 +184,9 @@ object Form1: TForm1
     TabOrder = 11
   end
   object Memo1: TMemo
-    Left = 40
-    Height = 90
-    Top = 352
+    Left = 24
+    Height = 240
+    Top = 304
     Width = 150
     Lines.Strings = (
       'Memo1'
