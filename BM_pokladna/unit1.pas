@@ -290,7 +290,7 @@ var
    iStlpca, iRiadku, iVybratehoVTovary, iVybratehoVPKosik, iTovaru
      , ziadaneMnozstvo: Integer;
    inputRiadok: string;
-   novyTovar: boolean;
+   novyTovar, niecoZadal, zadalInt: boolean;
 begin
      //testy
      //iStlpca:= Ponuka.Col;
@@ -314,8 +314,36 @@ begin
         iVybratehoVPKosik:= Tovary[iVybratehoVTovary].iVKosiku;
      end;
 
-     ziadaneMnozstvo:= strToInt(inputbox(
-        PKosik[iVybratehoVPKosik].nazov, 'Zadajte mnozstvo:', inputRiadok));
+     //niecoZadal:= inputQuery(PKosik[iVybratehoVPKosik].nazov,
+     //             'Zadajte mnozstvo:', inputRiadok);
+     //if niecoZadal then begin
+     //   zadalInt:= tryStrToInt(inputRiadok, ziadaneMnozstvo);
+     //   if not zadalInt then begin
+     //     showMessage('zadaj CISLO. CELE CISLO. A ne*er ma.');
+     //   end else begin
+     //     showMessage('Som zadany (' +intToStr(ziadaneMnozstvo)+')');
+     //   end;
+     //end;
+
+     niecoZadal:= true;
+     zadalInt:= false;
+     while niecoZadal and not zadalInt do begin
+         inputRiadok:= '1';
+         niecoZadal:= inputQuery(PKosik[iVybratehoVPKosik].nazov,
+                  'Zadajte mnozstvo:', inputRiadok);
+         zadalInt:= tryStrToInt(inputRiadok, ziadaneMnozstvo);
+         if not zadalInt or (ziadaneMnozstvo < 1) then begin
+           showMessage('zadaj CISLO. PRIRODZENE CISLO. Vies, ako ma stves?!');
+           exit;
+           exit;
+         end else begin
+           //showMessage('Som zadany (' +intToStr(ziadaneMnozstvo)+')');
+         end;
+     end;
+     //if not zadalInt then abort;
+
+     //ziadaneMnozstvo:= strToInt(inputbox(
+     //   PKosik[iVybratehoVPKosik].nazov, 'Zadajte mnozstvo:', inputRiadok));
      if (ziadaneMnozstvo > Tovary[iVybratehoVTovary].mnozstvo) then begin
         showMessage('Na sklade mame iba '
                   +intToStr(Tovary[iVybratehoVTovary].mnozstvo) +' '
@@ -344,18 +372,6 @@ begin
      Memo1.Clear;
      Memo1.Append(intToStr(PKosik[iVybratehoVPKosik].mnozstvo)
          +' '+ floatToStr(PKosik[iVybratehoVPKosik].cenaSpolu));
-
-     ////hard verzia
-     ////na 0. riadku nadpisy
-     //Kosik.Cells[0, kupenychTovarov+1]:= PKosik[kupenychTovarov].nazov;
-     //Kosik.Cells[1, kupenychTovarov+1]:=
-     //               floatToStr(PKosik[kupenychTovarov].cenaKusPredaj);
-     //Kosik.Cells[2, kupenychTovarov+1]:=
-     //               intToStr(PKosik[kupenychTovarov].mnozstvo);
-     //Kosik.Cells[3, kupenychTovarov+1]:=
-     //               floatToStr(PKosik[kupenychTovarov].cenaSpolu);
-     //
-     //inc(kupenychTovarov);
 
      //hard hard verzia (2 rovnake tovar => 1 riadok)
      //+1 lebo fixed riadok (nadpisy)
