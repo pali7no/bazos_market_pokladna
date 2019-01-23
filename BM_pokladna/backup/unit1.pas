@@ -317,7 +317,7 @@ begin
      ziadaneMnozstvo:= strToInt(inputbox(
         PKosik[iVybratehoVPKosik].nazov, 'Zadajte mnozstvo:', inputRiadok));
      if (ziadaneMnozstvo > Tovary[iVybratehoVTovary].mnozstvo) then begin
-        showMessage('Na sklade mame iba'
+        showMessage('Na sklade mame iba '
                   +intToStr(Tovary[iVybratehoVTovary].mnozstvo) +' '
                   +Tovary[iVybratehoVTovary].nazov);
         exit;
