@@ -288,7 +288,7 @@ end;
 procedure TForm1.PonukaClick(Sender: TObject);
 var
    iStlpca, iRiadku, iVybratehoVTovary, iVybratehoVPKosik, iTovaru
-     , ziadaneMnozstvo: Integer;
+     , ziadaneMnozstvo, chcemViac: Integer;
    inputRiadok: string;
    novyTovar, niecoZadal, zadalInt: boolean;
 begin
@@ -330,14 +330,17 @@ begin
      while niecoZadal and not zadalInt do begin
          inputRiadok:= '1';
          niecoZadal:= inputQuery(PKosik[iVybratehoVPKosik].nazov,
-                  'Zadajte mnozstvo:', inputRiadok);
+                  'Zadajte mnozstvo: '+PKosik[iVybratehoVPKosik].nazov,
+                  inputRiadok);
+         if not niecoZadal then begin
+            exit;
+            exit;
+         end;
          zadalInt:= tryStrToInt(inputRiadok, ziadaneMnozstvo);
          if not zadalInt or (ziadaneMnozstvo < 1) then begin
            showMessage('zadaj CISLO. PRIRODZENE CISLO. Vies, ako ma stves?!');
-           exit;
-           exit;
          end else begin
-           showMessage('Som zadany (' +intToStr(ziadaneMnozstvo)+')');
+           //showMessage('Som zadany (' +intToStr(ziadaneMnozstvo)+')');
          end;
      end;
      //if not zadalInt then abort;
@@ -345,10 +348,16 @@ begin
      //ziadaneMnozstvo:= strToInt(inputbox(
      //   PKosik[iVybratehoVPKosik].nazov, 'Zadajte mnozstvo:', inputRiadok));
      if (ziadaneMnozstvo > Tovary[iVybratehoVTovary].mnozstvo) then begin
-        showMessage('Na sklade mame iba '
+        //showMessage('Na sklade mame iba '
+        //          +intToStr(Tovary[iVybratehoVTovary].mnozstvo) +' '
+        //          +Tovary[iVybratehoVTovary].nazov);
+        chcemViac := messageDlg('Na sklade mame iba '
                   +intToStr(Tovary[iVybratehoVTovary].mnozstvo) +' '
-                  +Tovary[iVybratehoVTovary].nazov);
-        exit;
+                  +Tovary[iVybratehoVTovary].nazov+ 'Chcete aj tak predat?'
+                  ,mtCustom, mbOKCancel, 0);
+        if (chcemViac = mrCancel) then begin
+           exit;
+        end;
      end;
 
      //Tovary[iVybratehoVTovary] => PKosik[iVybratehoVPKosik]
@@ -366,6 +375,9 @@ begin
      //odratanie v Tovary[iVybratehoVTovary] a v Ponuke
      Tovary[iVybratehoVTovary].mnozstvo:= Tovary[iVybratehoVTovary].mnozstvo
                                           - ziadaneMnozstvo;
+     if (Tovary[iVybratehoVTovary].mnozstvo < 0) then begin
+        Tovary[iVybratehoVTovary].mnozstvo:= 0;
+     end;
      Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iVybratehoVTovary].mnozstvo);
 
      //testy
