@@ -173,6 +173,7 @@ object Form1: TForm1
     Top = 24
     Width = 75
     Caption = 'zrusitNakup'
+    OnClick = zrusitNakupClick
     TabOrder = 10
   end
   object zaplatit: TButton

@@ -56,6 +56,7 @@ type
     procedure zobrazVsetkoClick(Sender: TObject);
     procedure zobrazZeleninaClick(Sender: TObject);
     procedure ZobrazJedenDruh(druh: integer);
+    procedure zrusitNakupClick(Sender: TObject);
   private
 
   public
@@ -66,6 +67,7 @@ type
 var
   Form1: TForm1;
   Tovary, PKosik: array [0..99] of tovarTyp;
+  prazdnyTovar: tovarTyp;
   sklad, tovar, cennik, statistiky: textFile;
   tovarov, kupenychTovarov: integer;
 
@@ -88,6 +90,17 @@ begin
          Tovary[odpadInt].iVPonuke:= -1;
          Tovary[odpadInt].iVKosiku:= -1;
      end;
+     Kosik.RowCount:= 1; //nadpis
+
+     //prazdny tovar inicializacia
+     prazdnyTovar.cenaKusNakup:= 0;
+     prazdnyTovar.cenaKusPredaj:= 0;
+     prazdnyTovar.cenaSpolu:= 0;
+     prazdnyTovar.kod:= -1;
+     prazdnyTovar.mnozstvo:= 0;
+     prazdnyTovar.iVPonuke:= -1;
+     prazdnyTovar.iVKosiku:= -1;
+     prazdnyTovar.nazov:= '';
 
      //pociatocne priradenie
      assignFile(sklad, 'SKLAD.txt');
@@ -104,7 +117,18 @@ begin
      readLn(tovar, odpadInt);
      readLn(cennik, odpadInt);
 
-     //Memo1.Append(intToStr(odpadInt));
+//     Procedure DeleteRow(Grid: TStringGrid; ARow: Integer);
+//var
+//  i: Integer;
+//begin
+//  for i := ARow to Grid.RowCount - 2 do
+//    Grid.Rows[i].Assign(Grid.Rows[i + 1]);
+//  Grid.RowCount := Grid.RowCount - 1;
+//end;
+
+      Ponuka.RowCount:= tovarov + 1; //+nadpis
+
+      //Memo1.Append(intToStr(odpadInt));
      for iTovaru:=0 to tovarov-1 do begin
          NacitaniePolozkyTOVARtxt(iTovaru);
          NacitaniePolozkySKLADtxt(iTovaru);
@@ -231,10 +255,12 @@ procedure TForm1.ZobrazJedenDruh(druh: integer);
 var
    iTovaru,iRiadku: integer;
 begin
-    VycistiPonuku;
+    //VycistiPonuku;
+    Ponuka.RowCount:= 1;
     iRiadku:= 1;
     for iTovaru:=0 to tovarov-1 do begin
         if (Tovary[iTovaru].kod div 1000 = druh) then begin
+           Ponuka.RowCount:= Ponuka.RowCount + 1;
            Ponuka.Cells[0, iRiadku]:= Tovary[iTovaru].nazov;
            Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
            Ponuka.Cells[2, iRiadku]:= floatToStr(Tovary[iTovaru].cenaKusPredaj);
@@ -263,11 +289,18 @@ begin
     ZobrazJedenDruh(3); //3 = pecivo
 end;
 
+procedure TForm1.zobrazIneClick(Sender: TObject);
+begin
+    VycistiPonuku;
+    ZobrazJedenDruh(4); //4 = ine
+end;
+
 procedure TForm1.zobrazVsetkoClick(Sender: TObject);
 var
    iTovaru, iRiadku: integer;
 begin
-    VycistiPonuku;
+    //VycistiPonuku;
+    Ponuka.RowCount:= tovarov + 1;
     iRiadku:= -1;
     for iTovaru:=0 to tovarov-1 do begin
         iRiadku:= iTovaru + 1;
@@ -279,10 +312,19 @@ begin
     end;
 end;
 
-procedure TForm1.zobrazIneClick(Sender: TObject);
+procedure TForm1.zrusitNakupClick(Sender: TObject);
+var
+   chceZrusit, iRiadku: integer;
 begin
-    VycistiPonuku;
-    ZobrazJedenDruh(4); //4 = ine
+    chceZrusit := messageDlg('Naozaj chcete zrusit cely nakup?'
+              ,mtCustom, mbOKCancel, 0);
+    if (chceZrusit = mrOK) then begin
+         Kosik.RowCount:= 1; //legendarne nadpisy
+         for iRiadku:=0 to kupenychTovarov-1 do begin
+             //Tovary[PKosik[iRiadku].iVTovary].iVKosiku:= -1;
+             PKosik[iRiadku]:= prazdnyTovar;
+         end;
+    end;
 end;
 
 procedure TForm1.PonukaClick(Sender: TObject);
@@ -384,6 +426,8 @@ begin
      Memo1.Clear;
      Memo1.Append(intToStr(PKosik[iVybratehoVPKosik].mnozstvo)
          +' '+ floatToStr(PKosik[iVybratehoVPKosik].cenaSpolu));
+
+     if novyTovar then Kosik.RowCount:= Kosik.RowCount + 1;
 
      //hard hard verzia (2 rovnake tovar => 1 riadok)
      //+1 lebo fixed riadok (nadpisy)
