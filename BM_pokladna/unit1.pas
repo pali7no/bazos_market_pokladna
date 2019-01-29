@@ -43,6 +43,7 @@ type
     Ponuka: TStringGrid;
     Kosik: TStringGrid;
     procedure FormCreate(Sender: TObject);
+    procedure KosikClick(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure PonukaClick(Sender: TObject);
@@ -57,6 +58,7 @@ type
     procedure zobrazZeleninaClick(Sender: TObject);
     procedure ZobrazJedenDruh(druh: integer);
     procedure zrusitNakupClick(Sender: TObject);
+    procedure zrusitPolozkuClick(Sender: TObject);
   private
 
   public
@@ -142,6 +144,7 @@ begin
      //    for sgRiadky:=1 to 9 do
      //        Ponuka.Cells[sgStlpce,sgRiadky]:= intToStr(sgStlpce+sgRiadky+1);
 end;
+
 
 procedure TForm1.NacitaniePolozkyTOVARtxt(iTovaru: integer);
 var
@@ -314,18 +317,44 @@ end;
 
 procedure TForm1.zrusitNakupClick(Sender: TObject);
 var
-   chceZrusit, iRiadku: integer;
+   chceZrusit, iRiadku, iHlad: integer;
 begin
     chceZrusit := messageDlg('Naozaj chcete zrusit cely nakup?'
               ,mtCustom, mbOKCancel, 0);
+
     if (chceZrusit = mrOK) then begin
          Kosik.RowCount:= 1; //legendarne nadpisy
          for iRiadku:=0 to kupenychTovarov-1 do begin
              //Tovary[PKosik[iRiadku].iVTovary].iVKosiku:= -1;
+             iHlad:= 0;
+             while(PKosik[iRiadku].nazov <> Tovary[iHlad].nazov) do begin
+                 inc(iHlad);
+             end;
+             Tovary[iHlad].iVKosiku:= -1; //uz nie je v kosiku
+             Tovary[iHlad].mnozstvo:= Tovary[iHlad].mnozstvo
+                                      + PKosik[iRiadku].mnozstvo;
+             if (Tovary[iHlad].iVPonuke <> -1) then begin
+                Ponuka.Cells[3, Tovary[iHlad].iVPonuke]:=
+                                intToStr(Tovary[iHlad].mnozstvo);
+             end;
              PKosik[iRiadku]:= prazdnyTovar;
          end;
+         kupenychTovarov:= 0;
     end;
 end;
+
+procedure TForm1.zrusitPolozkuClick(Sender: TObject);
+begin
+
+end;
+
+//procedure TForm1.zrusitPolozkuClick(Sender: TObject);
+//var
+//   keyWord: string;
+//   zadalStr: boolean;
+//begin
+//
+//end;
 
 procedure TForm1.PonukaClick(Sender: TObject);
 var
@@ -442,6 +471,58 @@ begin
      if (novyTovar = true) then begin
          inc(kupenychTovarov);
      end;
+end;
+
+procedure TForm1.KosikClick(Sender: TObject);
+var
+   iRiadku, iVPKosik, iPosun, iPosunT, iVTovary: integer;
+   chceZrusit: integer;
+begin
+    iRiadku:= Kosik.row;
+    iVPKosik:= 0;
+    iVTovary:= 0;
+    while(Kosik.Cells[0, iRiadku] <> PKosik[iVPKosik].nazov) do begin
+        inc(iVPKosik);
+    end;
+    while(Kosik.Cells[0, iRiadku] <> Tovary[iVTovary].nazov) do begin
+        inc(iVTovary);
+    end;
+
+
+    chceZrusit := messageDlg('Naozaj chcete zrusit '
+                   +intToStr(PKosik[iVPKosik].mnozstvo) +' '
+                   +PKosik[iVPKosik].nazov+ '?'
+                   ,mtCustom, mbOKCancel, 0);
+    if (chceZrusit = mrOK) then begin
+        Tovary[iVTovary].iVKosiku:= -1;
+        Tovary[iVTovary].mnozstvo:= Tovary[iVTovary].mnozstvo
+                                    - PKosik[iVPKosik].mnozstvo;
+
+        if (Tovary[iVTovary].iVPonuke <> -1) then begin
+               Ponuka.Cells[3,Tovary[iVTovary].iVPonuke]:=
+                        intToStr(Tovary[iVTovary].mnozstvo);
+        end;
+
+        for iPosun:= iVPKosik to kupenychTovarov-2 do begin
+            PKosik[iPosun]:= PKosik[iPosun+1];
+            PKosik[iPosun].iVKosiku:= PKosik[iPosun].iVKosiku - 1;
+
+
+            //zmena v TovaryPonuka
+            iPosunT:= 0;
+            while (Tovary[iPosunT].nazov <>  PKosik[iPosun].nazov) do begin
+                inc(iPosunT);
+            end;
+            Tovary[iPosunT].iVKosiku:= Tovary[iPosunT].iVKosiku - 1;
+
+            Kosik.Rows[iPosun+1].Assign(Kosik.Rows[iPosun+2]);
+        end;
+
+        //zmena posledneho
+        PKosik[kupenychTovarov-1]:= prazdnyTovar;
+        Kosik.RowCount:= Kosik.RowCount - 1;
+        dec(kupenychTovarov);
+    end;
 end;
 
 procedure TForm1.MenuItem1Click(Sender: TObject);
