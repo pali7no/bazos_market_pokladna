@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-     Grids, Menus, LazFileUtils, LazUtf8;
+     Grids, Menus, ExtCtrls, LazFileUtils, LazUtf8;
 const
   preskokKod = 5;
 
@@ -30,6 +30,7 @@ type
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
     MenuItem5: TMenuItem;
+    menoPokladnika: TPanel;
     zaplatit: TButton;
     zobrazOvocie: TButton;
     zobrazZelenina: TButton;
@@ -51,6 +52,7 @@ type
     procedure NacitaniePolozkySKLADtxt(iTovaru: integer);
     procedure NacitaniePolozkyCENNIKtxt(iTovaru: integer);
     procedure VycistiPonuku;
+    procedure zaplatitClick(Sender: TObject);
     procedure zobrazIneClick(Sender: TObject);
     procedure zobrazOvocieClick(Sender: TObject);
     procedure zobrazPecivoClick(Sender: TObject);
@@ -72,6 +74,7 @@ var
   prazdnyTovar: tovarTyp;
   sklad, tovar, cennik, statistiky: textFile;
   tovarov, kupenychTovarov: integer;
+  pokladnik: string;
 
 implementation
 
@@ -84,7 +87,17 @@ var
     odpadInt, iTovaru, iZnaku: integer;
     odpadChar: char;
     odpadString, kodString, nazovString, kodNazovString: string;
+    zadalMeno: boolean;
 begin
+    //prihlasnenie pokladnika
+    zadalMeno:= false;
+    pokladnik:= '';
+    while not zadalMeno or (pokladnik = '') do begin
+        zadalMeno:= inputQuery('Modul: Pokladna','Zadajte vase meno',
+                    pokladnik);
+        menoPokladnika.Caption:= 'Meno pokladnika: '+pokladnik;
+    end;
+
     //pociatocna inicializacia
     kupenychTovarov:= 0;
      //iVPonuke = -1 => nie je v Ponuke
@@ -517,11 +530,34 @@ begin
 
             Kosik.Rows[iPosun+1].Assign(Kosik.Rows[iPosun+2]);
         end;
+
+        //zmena posledneho
         PKosik[kupenychTovarov-1]:= prazdnyTovar;
         Kosik.RowCount:= Kosik.RowCount - 1;
         dec(kupenychTovarov);
     end;
+end;
 
+procedure TForm1.zaplatitClick(Sender: TObject);
+var
+   iPredaj, transID: integer;
+   aktDatum: TDateTime;
+begin
+    //testy
+    //Memo1.Append(DateToStr(Now));
+
+    //DeCodeDate(datum,RR,MM,DD);
+    //datum := EncodeDateTime(2000, 2, 9, 5, 6, 7, 8);
+    aktDatum:= now;
+    ShowMessage('dd/mm/yy = '+
+               FormatDateTime('YYMMDD', aktDatum));
+
+    //append(statistiky);
+    //transID:= 10000000 + random(89999999);;
+    //for iPredaj:=0 to kupenychTovarov-1 do begin
+    //    writeLn('P;'+ intToStr(transID) +';'+ intToStr(PKosik[iPredaj].kod)+
+    //    );
+    //end;
 end;
 
 procedure TForm1.MenuItem1Click(Sender: TObject);
