@@ -509,7 +509,7 @@ begin
     if (chceZrusit = mrOK) then begin
         Tovary[iVTovary].iVKosiku:= -1;
         Tovary[iVTovary].mnozstvo:= Tovary[iVTovary].mnozstvo
-                                    - PKosik[iVPKosik].mnozstvo;
+                                    + PKosik[iVPKosik].mnozstvo;
 
         if (Tovary[iVTovary].iVPonuke <> -1) then begin
                Ponuka.Cells[3,Tovary[iVTovary].iVPonuke]:=
@@ -572,4 +572,4 @@ end;
 
 end.
 
-//Windows GitBash test
+//gitkraken jozo test
