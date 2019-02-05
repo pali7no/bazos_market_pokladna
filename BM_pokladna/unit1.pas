@@ -283,6 +283,7 @@ begin
            Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
            Tovary[iTovaru].iVPonuke:= iRiadku;
            inc(iRiadku);
+           inc(pocOvocia)
         end;
     end;
 end;

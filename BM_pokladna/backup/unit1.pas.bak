@@ -105,6 +105,7 @@ begin
          Tovary[odpadInt].iVPonuke:= -1;
          Tovary[odpadInt].iVKosiku:= -1;
      end;
+<<<<<<< Updated upstream
      Kosik.RowCount:= 1; //nadpis
 
      //prazdny tovar inicializacia
@@ -116,6 +117,8 @@ begin
      prazdnyTovar.iVPonuke:= -1;
      prazdnyTovar.iVKosiku:= -1;
      prazdnyTovar.nazov:= '';
+=======
+>>>>>>> Stashed changes
 
      //pociatocne priradenie
      assignFile(sklad, 'SKLAD.txt');
@@ -372,7 +375,11 @@ end;
 procedure TForm1.PonukaClick(Sender: TObject);
 var
    iStlpca, iRiadku, iVybratehoVTovary, iVybratehoVPKosik, iTovaru
+<<<<<<< Updated upstream
      , ziadaneMnozstvo, chcemViac: Integer;
+=======
+     , ziadaneMnozstvo: Integer;
+>>>>>>> Stashed changes
    inputRiadok: string;
    novyTovar, niecoZadal, zadalInt: boolean;
 begin
@@ -383,6 +390,7 @@ begin
 
      //hard vyberanie
      iRiadku:= Ponuka.Row;
+<<<<<<< Updated upstream
 
      //najdenie tovaru v Tovary[] a PKosik[]
      iTovaru:= 0;
@@ -519,8 +527,78 @@ begin
         for iPosun:= iVPKosik to kupenychTovarov-2 do begin
             PKosik[iPosun]:= PKosik[iPosun+1];
             PKosik[iPosun].iVKosiku:= PKosik[iPosun].iVKosiku - 1;
+=======
 
+     //najdenie tovaru v Tovary[] a PKosik[]
+     iTovaru:= 0;
+     while(Tovary[iTovaru].iVPonuke <> iRiadku) do inc(iTovaru);
+     iVybratehoVTovary:= iTovaru;
 
+     if (Tovary[iVybratehoVTovary].iVKosiku = -1) then begin //este nekupene
+        novyTovar:= true;
+        iVybratehoVPKosik:= kupenychTovarov; //novy riadok
+        Tovary[iVybratehoVTovary].iVKosiku:= iVybratehoVPKosik;
+     end else begin
+        novyTovar:= false;
+        iVybratehoVPKosik:= Tovary[iVybratehoVTovary].iVKosiku;
+     end;
+
+     //niecoZadal:= inputQuery(PKosik[iVybratehoVPKosik].nazov,
+     //             'Zadajte mnozstvo:', inputRiadok);
+     //if niecoZadal then begin
+     //   zadalInt:= tryStrToInt(inputRiadok, ziadaneMnozstvo);
+     //   if not zadalInt then begin
+     //     showMessage('zadaj CISLO. CELE CISLO. A ne*er ma.');
+     //   end else begin
+     //     showMessage('Som zadany (' +intToStr(ziadaneMnozstvo)+')');
+     //   end;
+     //end;
+
+     niecoZadal:= true;
+     zadalInt:= false;
+     while niecoZadal and not zadalInt do begin
+         inputRiadok:= '1';
+         niecoZadal:= inputQuery(PKosik[iVybratehoVPKosik].nazov,
+                  'Zadajte mnozstvo:', inputRiadok);
+         zadalInt:= tryStrToInt(inputRiadok, ziadaneMnozstvo);
+         if not zadalInt or (ziadaneMnozstvo < 1) then begin
+           showMessage('zadaj CISLO. PRIRODZENE CISLO. Vies, ako ma stves?!');
+           exit;
+           exit;
+         end else begin
+           //showMessage('Som zadany (' +intToStr(ziadaneMnozstvo)+')');
+         end;
+     end;
+     //if not zadalInt then abort;
+
+     //ziadaneMnozstvo:= strToInt(inputbox(
+     //   PKosik[iVybratehoVPKosik].nazov, 'Zadajte mnozstvo:', inputRiadok));
+     if (ziadaneMnozstvo > Tovary[iVybratehoVTovary].mnozstvo) then begin
+        showMessage('Na sklade mame iba '
+                  +intToStr(Tovary[iVybratehoVTovary].mnozstvo) +' '
+                  +Tovary[iVybratehoVTovary].nazov);
+        exit;
+     end;
+>>>>>>> Stashed changes
+
+     //Tovary[iVybratehoVTovary] => PKosik[iVybratehoVPKosik]
+     //osetreny pripad noveho i stareho tovaru
+     PKosik[iVybratehoVPKosik].nazov:= Tovary[iVybratehoVTovary].nazov;
+     PKosik[iVybratehoVPKosik].kod:= Tovary[iVybratehoVTovary].kod;
+     PKosik[iVybratehoVPKosik].cenaKusPredaj:= Tovary[iVybratehoVTovary].cenaKusPredaj;
+     PKosik[iVybratehoVPKosik].iVPonuke:= iVybratehoVPKosik + 1;
+     PKosik[iVybratehoVPKosik].cenaKusNakup:= -1; //nepotrebujeme
+     PKosik[iVybratehoVPKosik].mnozstvo:= PKosik[iVybratehoVPKosik].mnozstvo +
+                                          ziadaneMnozstvo;
+     PKosik[iVybratehoVPKosik].cenaSpolu:= PKosik[iVybratehoVPKosik].cenaSpolu +
+                  (PKosik[iVybratehoVPKosik].cenaKusPredaj * ziadaneMnozstvo);
+
+     //odratanie v Tovary[iVybratehoVTovary] a v Ponuke
+     Tovary[iVybratehoVTovary].mnozstvo:= Tovary[iVybratehoVTovary].mnozstvo
+                                          - ziadaneMnozstvo;
+     Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iVybratehoVTovary].mnozstvo);
+
+<<<<<<< Updated upstream
             //zmena v TovaryPonuka
             iPosunT:= 0;
             while (Tovary[iPosunT].nazov <>  PKosik[iPosun].nazov) do begin
@@ -558,6 +636,26 @@ begin
     //    writeLn('P;'+ intToStr(transID) +';'+ intToStr(PKosik[iPredaj].kod)+
     //    );
     //end;
+=======
+     //testy
+     Memo1.Clear;
+     Memo1.Append(intToStr(PKosik[iVybratehoVPKosik].mnozstvo)
+         +' '+ floatToStr(PKosik[iVybratehoVPKosik].cenaSpolu));
+
+     //hard hard verzia (2 rovnake tovar => 1 riadok)
+     //+1 lebo fixed riadok (nadpisy)
+     Kosik.Cells[0, iVybratehoVPKosik+1]:= PKosik[iVybratehoVPKosik].nazov;
+     Kosik.Cells[1, iVybratehoVPKosik+1]:=
+                    floatToStr(PKosik[iVybratehoVPKosik].cenaKusPredaj);
+     Kosik.Cells[2, iVybratehoVPKosik+1]:=
+                    intToStr(PKosik[iVybratehoVPKosik].mnozstvo);
+     Kosik.Cells[3, iVybratehoVPKosik+1]:=
+                    floatToStr(PKosik[iVybratehoVPKosik].cenaSpolu);
+
+     if (novyTovar = true) then begin
+         inc(kupenychTovarov);
+     end;
+>>>>>>> Stashed changes
 end;
 
 procedure TForm1.MenuItem1Click(Sender: TObject);
