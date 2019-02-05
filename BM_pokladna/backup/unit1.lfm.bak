@@ -4,11 +4,11 @@ object Form1: TForm1
   Top = 115
   Width = 946
   Caption = 'Pokladna'
-  ClientHeight = 553
+  ClientHeight = 552
   ClientWidth = 946
   Menu = Lista
   OnCreate = FormCreate
-  LCLVersion = '1.8.4.0'
+  LCLVersion = '1.4.0.4'
   object Ponuka: TStringGrid
     Left = 16
     Height = 224
@@ -93,7 +93,7 @@ object Form1: TForm1
   end
   object Edit1: TEdit
     Left = 24
-    Height = 21
+    Height = 23
     Top = 0
     Width = 120
     TabOrder = 6
@@ -101,7 +101,7 @@ object Form1: TForm1
   end
   object Edit2: TEdit
     Left = 152
-    Height = 21
+    Height = 23
     Top = 0
     Width = 120
     TabOrder = 7
@@ -159,23 +159,14 @@ object Form1: TForm1
       'spolu'
     )
   end
-  object zrusitPolozku: TButton
-    Left = 536
-    Height = 25
-    Top = 24
-    Width = 75
-    Caption = 'zrusitPolozku'
-    OnClick = zrusitPolozkuClick
-    TabOrder = 9
-  end
-  object zrusitNakup: TButton
+  object zrusNakup: TButton
     Left = 680
     Height = 25
     Top = 24
     Width = 75
-    Caption = 'zrusitNakup'
-    OnClick = zrusitNakupClick
-    TabOrder = 10
+    Caption = 'zrusNakup'
+    OnClick = zrusNakupClick
+    TabOrder = 9
   end
   object zaplatit: TButton
     Left = 616
@@ -184,7 +175,7 @@ object Form1: TForm1
     Width = 75
     Caption = 'zaplatit'
     OnClick = zaplatitClick
-    TabOrder = 11
+    TabOrder = 10
   end
   object Memo1: TMemo
     Left = 24
@@ -194,7 +185,7 @@ object Form1: TForm1
     Lines.Strings = (
       'Memo1'
     )
-    TabOrder = 12
+    TabOrder = 11
   end
   object menoPokladnika: TPanel
     Left = 184
@@ -202,7 +193,7 @@ object Form1: TForm1
     Top = 304
     Width = 170
     Caption = 'menoPokladnika'
-    TabOrder = 13
+    TabOrder = 12
   end
   object Lista: TMainMenu
     left = 234

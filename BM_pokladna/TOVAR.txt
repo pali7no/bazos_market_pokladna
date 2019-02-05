@@ -1,6 +1,7 @@
-5
-1000;jablko
-2000;paprika
-3000;kaiserka
-3001;chlieb
-4000;lyze
+6
+100;jablko
+200;paprika
+300;kaiserka
+301;chlieb
+400;lyze
+401;bahno
