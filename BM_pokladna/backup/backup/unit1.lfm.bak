@@ -4,7 +4,11 @@ object Form1: TForm1
   Top = 115
   Width = 946
   Caption = 'Pokladna'
+<<<<<<< HEAD
   ClientHeight = 552
+=======
+  ClientHeight = 553
+>>>>>>> c27fe0dc27a94bd97cd37d90acb1b6924c54ca80
   ClientWidth = 946
   Menu = Lista
   OnCreate = FormCreate
@@ -93,7 +97,11 @@ object Form1: TForm1
   end
   object Edit1: TEdit
     Left = 24
+<<<<<<< HEAD
     Height = 23
+=======
+    Height = 21
+>>>>>>> c27fe0dc27a94bd97cd37d90acb1b6924c54ca80
     Top = 0
     Width = 120
     TabOrder = 6
@@ -101,7 +109,11 @@ object Form1: TForm1
   end
   object Edit2: TEdit
     Left = 152
+<<<<<<< HEAD
     Height = 23
+=======
+    Height = 21
+>>>>>>> c27fe0dc27a94bd97cd37d90acb1b6924c54ca80
     Top = 0
     Width = 120
     TabOrder = 7

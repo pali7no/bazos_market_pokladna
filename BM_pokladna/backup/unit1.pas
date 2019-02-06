@@ -1,4 +1,4 @@
-unit Unit1;
+﻿unit Unit1;
 
 {$mode objfpc}{$H+}
 
@@ -570,7 +570,6 @@ var
      medzK1, medzK2, medzK3, sepLine, iTovaru, dlzCisla: integer;
    transID: int64;
    aktDatum: TDateTime;
-   strList: TStringList;
    skladOldRiadok, skladNewRiadok, riadokUctu: string;
    uctenka: textFile;
 begin
@@ -596,25 +595,25 @@ begin
     //flush(statistiky);
     //closeFile(statistiky);
 
-    strList:= TStringList.Create;
-    strList.LoadFromFile('STATISTIKY.txt');
-    statRiadkov:= strToInt(strList[0]) + kupenychTovarov;
-    strList[0]:= intToStr(statRiadkov);
-    //strList.Text := StringReplace(strList.Text, '3', '4', [rfIgnoreCase]);
+    statStrList:= TStringList.Create;
+    statStrList.LoadFromFile('STATISTIKY.txt');
+    statRiadkov:= strToInt(statStrList[0]) + kupenychTovarov;
+    statStrList[0]:= intToStr(statRiadkov);
+    //statStrList.Text := StringReplace(statStrList.Text, '3', '4', [rfIgnoreCase]);
 
     for iPredaj:=0 to kupenychTovarov-1 do begin
-        strList.Add('P;'+ intToStr(transID) +';'+
+        statStrList.Add('P;'+ intToStr(transID) +';'+
         intToStr(PKosik[iPredaj].kod) +';'+
         intToStr(PKosik[iPredaj].mnozstvo) +';'+
         floatToStr(PKosik[iPredaj].cenaKusPredaj) +';'+
         FormatDateTime('YYMMDD', aktDatum));
     end;
-    strList.SaveToFile('STATISTIKY.txt');
-    strList.Free;
+    statStrList.SaveToFile('STATISTIKY.txt');
+    statStrList.Free;
 
     //ubratie tovaru zo SKLAD.txt
-    strList:= TStringList.Create;
-    strList.LoadFromFile('SKLAD.txt');
+    skladStrList:= TStringList.Create;
+    skladStrList.LoadFromFile('SKLAD.txt');
     for iPredaj:=0 to kupenychTovarov-1 do begin
         iVTovary:= 0;
         while (PKosik[iPredaj].kod <> Tovary[iVTovary].kod) do begin
@@ -624,35 +623,36 @@ begin
         skladOldRiadok:= intToStr(PKosik[iPredaj].kod) +';'+ intToStr(povMnozstvo);
         skladNewRiadok:= intToStr(PKosik[iPredaj].kod) +';'+
                     intToStr(Tovary[iVTovary].mnozstvo);
-        strList.Text := StringReplace(strList.Text,
+        skladStrList.Text := StringReplace(skladStrList.Text,
                           skladOldRiadok, skladNewRiadok, [rfIgnoreCase]);
     end;
-    strList.SaveToFile('SKLAD.txt');
-    strList.Free;
+    skladStrList.SaveToFile('SKLAD.txt');
+    skladStrList.Free;
 
     //vytvorenie uctenka_[id_transakcie].txt
     sepLine:= 50;
 
-    strList:= TStringList.Create;
-    strList.Add('╔═══╗');
-    strList.Add('║   ║ |\  /|');
-    strList.Add('╠═══╣ | \/ |');
-    strList.Add('║   ║ |    |');
-    strList.Add('╚═══╝ |    |');
-    strList.Add('Jesenskeho 4/A, 811 02  Bratislava 1');
-    strList.Add(stringOfChar('_',sepLine));
 
-    strList.Add('Datum: ' +stringOfChar(' ',medzK1 - 7)+ dateToStr(now));
-    strList.Add('Cas: ' +stringOfChar(' ', medzK1 - 5)+ timeToStr(now));
-    strList.Add('Cislo uctenky: ' +stringOfChar(' ', medzK1 - 15)+
+    uctStrList:= TStringList.Create;
+    uctStrList.Add('╔═══╗');
+    uctStrList.Add('║   ║ |\  /|');
+    uctStrList.Add('╠═══╣ | \/ |');
+    uctStrList.Add('║   ║ |    |');
+    uctStrList.Add('╚═══╝ |    |');
+    uctStrList.Add('Jesenskeho 4/A, 811 02  Bratislava 1');
+    uctStrList.Add(stringOfChar('_',sepLine));
+
+    uctStrList.Add('Datum: ' +stringOfChar(' ',medzK1 - 7)+ dateToStr(now));
+    uctStrList.Add('Cas: ' +stringOfChar(' ', medzK1 - 5)+ timeToStr(now));
+    uctStrList.Add('Cislo uctenky: ' +stringOfChar(' ', medzK1 - 15)+
                           intToStr(transID));
-    strList.Add(stringOfChar('_',sepLine));
+    uctStrList.Add(stringOfChar('_',sepLine));
 
     medzK1:= 20;
     medzK2:= 4;
     medzK3:= 6;
     for iTovaru:=0 to kupenychTovarov-1 do begin
-        //strList.Add(PKosik[iTovaru].nazov +stringOfChar(' ',medzK1)+
+        //uctStrList.Add(PKosik[iTovaru].nazov +stringOfChar(' ',medzK1)+
         //intToStr(PKosik[iTovaru].cenaKusPredaj / 100) +' €'+)
         riadokUctu:= PKosik[iTovaru].nazov;
         //if (PKosik[iTovaru].cenaKusPredaj > 999)
@@ -670,13 +670,13 @@ begin
         riadokUctu:= riadokUctu + stringOfChar(' ',medzK3-dlzCisla) +
                      floatToStr(PKosik[iTovaru].cenaKusPredaj / 100 *
                      PKosik[iTovaru].mnozstvo) +' €';
-        strList.Add(riadokUctu);
+        uctStrList.Add(riadokUctu);
     end;
 
     //formatfloat('0.0000', float)
 
-    strList.SaveToFile('uctenka_' +intToStr(transID));
-    strList.Free;
+    uctStrList.SaveToFile('uctenka_' +intToStr(transID));
+    uctStrList.Free;
     //assignFile(uctenka, 'uctenka_' +intToStr(transID));
     //rewrite(uctenka);
     //closeFile(uctenka);
