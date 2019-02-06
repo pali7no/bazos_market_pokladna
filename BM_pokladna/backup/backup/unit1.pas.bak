@@ -1,4 +1,4 @@
-unit Unit1;
+﻿unit Unit1;
 
 {$mode objfpc}{$H+}
 
@@ -570,7 +570,6 @@ var
      medzK1, medzK2, medzK3, sepLine, iTovaru, dlzCisla: integer;
    transID: int64;
    aktDatum: TDateTime;
-   statStrList, skladStrList, uctStrList: TStringList;
    skladOldRiadok, skladNewRiadok, riadokUctu: string;
    uctenka: textFile;
 begin
@@ -596,6 +595,7 @@ begin
     //flush(statistiky);
     //closeFile(statistiky);
 
+<<<<<<< HEAD
     statStrList:= TStringList.Create;
     statStrList.LoadFromFile('STATISTIKY.txt');
     statRiadkov:= strToInt(statStrList[0]) + kupenychTovarov;
@@ -609,6 +609,7 @@ begin
         floatToStr(PKosik[iPredaj].cenaKusPredaj) +';'+
         FormatDateTime('YYMMDD', aktDatum));
     end;
+<<<<<<< HEAD
     statStrList.SaveToFile('STATISTIKY.txt');
     statStrList.Free;
 
@@ -624,6 +625,7 @@ begin
         skladOldRiadok:= intToStr(PKosik[iPredaj].kod) +';'+ intToStr(povMnozstvo);
         skladNewRiadok:= intToStr(PKosik[iPredaj].kod) +';'+
                     intToStr(Tovary[iVTovary].mnozstvo);
+<<<<<<< HEAD
         skladStrList.Text := StringReplace(skladStrList.Text,
                           skladOldRiadok, skladNewRiadok, [rfIgnoreCase]);
     end;
@@ -633,6 +635,7 @@ begin
     //vytvorenie uctenka_[id_transakcie].txt
     sepLine:= 50;
 
+<<<<<<< HEAD
     uctStrList:= TStringList.Create;
     uctStrList.Add('╔═══╗');
     uctStrList.Add('║   ║ |\  /|');
@@ -675,7 +678,7 @@ begin
 
     //formatfloat('0.0000', float)
 
-    uctStrList.SaveToFile('uctenka_' +intToStr(transID)+ '.txt');
+    uctStrList.SaveToFile('uctenka_' +intToStr(transID));
     uctStrList.Free;
     //assignFile(uctenka, 'uctenka_' +intToStr(transID));
     //rewrite(uctenka);
@@ -696,4 +699,3 @@ begin
 end;
 
 end.
-//pokuspokus branch merge

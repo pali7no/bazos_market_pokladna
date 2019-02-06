@@ -1,4 +1,4 @@
-unit Unit1;
+﻿unit Unit1;
 
 {$mode objfpc}{$H+}
 
@@ -566,10 +566,10 @@ end;
 //uctenka_[id_transakcie].txt a zrusi Kosik
 procedure TForm1.zaplatitClick(Sender: TObject);
 var
-   iPredaj, transID, riadkov, statRiadkov, povMnozstvo, iVTovary,
+   iPredaj, riadkov, statRiadkov, povMnozstvo, iVTovary,
      medzK1, medzK2, medzK3, sepLine, iTovaru, dlzCisla: integer;
+   transID: int64;
    aktDatum: TDateTime;
-   statStrList, skladStrList, uctStrList: TStringList;
    skladOldRiadok, skladNewRiadok, riadokUctu: string;
    uctenka: textFile;
 begin
@@ -631,6 +631,7 @@ begin
 
     //vytvorenie uctenka_[id_transakcie].txt
     sepLine:= 50;
+
 
     uctStrList:= TStringList.Create;
     uctStrList.Add('╔═══╗');
