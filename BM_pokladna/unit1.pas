@@ -566,8 +566,9 @@ end;
 //uctenka_[id_transakcie].txt a zrusi Kosik
 procedure TForm1.zaplatitClick(Sender: TObject);
 var
-   iPredaj, transID, riadkov, statRiadkov, povMnozstvo, iVTovary,
+   iPredaj, riadkov, statRiadkov, povMnozstvo, iVTovary,
      medzK1, medzK2, medzK3, sepLine, iTovaru, dlzCisla: integer;
+   transID: int64;
    aktDatum: TDateTime;
    statStrList, skladStrList, uctStrList: TStringList;
    skladOldRiadok, skladNewRiadok, riadokUctu: string;
@@ -674,7 +675,7 @@ begin
 
     //formatfloat('0.0000', float)
 
-    uctStrList.SaveToFile('uctenka_' +intToStr(transID));
+    uctStrList.SaveToFile('uctenka_' +intToStr(transID)+ '.txt');
     uctStrList.Free;
     //assignFile(uctenka, 'uctenka_' +intToStr(transID));
     //rewrite(uctenka);
