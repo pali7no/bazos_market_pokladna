@@ -15,7 +15,7 @@ type
         //iVPonuke zatial nie je nutne, ale funguje a moze sa zist
         //asi je nutne ;)
         kod, mnozstvo, iVPonuke, iVKosiku: integer; //iVPonuke = -1 => nie je v Ponuke
-        cenaKusNakup, cenaKusPredaj, cenaSpolu: real;
+        cenaKusNakup, cenaKusPredaj, cenaSpolu: currency;
         nazov: string;
   end;
 
@@ -253,9 +253,10 @@ begin
     delete(cenaKusPredajString, iZnaku-preskokCennik2+1,
            length(cenaKusPredajString) - (iZnaku-preskokCennik2));
 
-    Tovary[iTovaru].cenaKusNakup:= strToFloat(cenaKusNakupString);
-    Tovary[iTovaru].cenaKusPredaj:= strToFloat(cenaKusPredajString);
-    Form1.Ponuka.Cells[2, iRiadku]:= floatToStr(Tovary[iTovaru].cenaKusPredaj);
+    Tovary[iTovaru].cenaKusNakup:= strToCurr(cenaKusNakupString);
+    Tovary[iTovaru].cenaKusPredaj:= strToCurr(cenaKusPredajString);
+    Form1.Ponuka.Cells[2, iRiadku]:= {floatToStr(Tovary[iTovaru].cenaKusPredaj);}
+    CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
 end;
 
 procedure TForm1.VycistitPonuku;
@@ -284,7 +285,7 @@ begin
            Ponuka.RowCount:= Ponuka.RowCount + 1;
            Ponuka.Cells[0, iRiadku]:= Tovary[iTovaru].nazov;
            Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
-           Ponuka.Cells[2, iRiadku]:= floatToStr(Tovary[iTovaru].cenaKusPredaj);
+           Ponuka.Cells[2, iRiadku]:= CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
            Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
            Tovary[iTovaru].iVPonuke:= iRiadku;
            inc(iRiadku);
@@ -327,7 +328,7 @@ begin
         iRiadku:= iTovaru + 1;
         Ponuka.Cells[0, iRiadku]:= Tovary[iTovaru].nazov;
         Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
-        Ponuka.Cells[2, iRiadku]:= floatToStr(Tovary[iTovaru].cenaKusPredaj);
+        Ponuka.Cells[2, iRiadku]:= CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
         Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
         Tovary[iTovaru].iVPonuke:= iRiadku;
     end;
@@ -479,7 +480,7 @@ begin
      //testy
      Memo1.Clear;
      Memo1.Append(intToStr(PKosik[iVybratehoVPKosik].mnozstvo)
-         +' '+ floatToStr(PKosik[iVybratehoVPKosik].cenaSpolu));
+         +' '+ CurrToStrF(PKosik[iVybratehoVPKosik].cenaSpolu, ffFixed, 2));
 
      if novyTovar then Kosik.RowCount:= Kosik.RowCount + 1;
 
@@ -487,11 +488,11 @@ begin
      //+1 lebo fixed riadok (nadpisy)
      Kosik.Cells[0, iVybratehoVPKosik+1]:= PKosik[iVybratehoVPKosik].nazov;
      Kosik.Cells[1, iVybratehoVPKosik+1]:=
-                    floatToStr(PKosik[iVybratehoVPKosik].cenaKusPredaj);
+                    currToStrF(PKosik[iVybratehoVPKosik].cenaKusPredaj, ffFixed, 2);
      Kosik.Cells[2, iVybratehoVPKosik+1]:=
                     intToStr(PKosik[iVybratehoVPKosik].mnozstvo);
      Kosik.Cells[3, iVybratehoVPKosik+1]:=
-                    floatToStr(PKosik[iVybratehoVPKosik].cenaSpolu);
+                    currToStrF(PKosik[iVybratehoVPKosik].cenaSpolu, ffFixed, 2);
 
      if (novyTovar = true) then begin
          inc(kupenychTovarov);
@@ -607,7 +608,7 @@ begin
         statStrList.Add('P;'+ intToStr(transID) +';'+
         intToStr(PKosik[iPredaj].kod) +';'+
         intToStr(PKosik[iPredaj].mnozstvo) +';'+
-        floatToStr(PKosik[iPredaj].cenaKusPredaj) +';'+
+        floatToStr(PKosik[iPredaj].cenaKusPredaj * 100) +';'+
         FormatDateTime('YYMMDD', aktDatum));
     end;
     statStrList.SaveToFile('STATISTIKY.txt');
