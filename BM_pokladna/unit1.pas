@@ -566,9 +566,10 @@ end;
 //uctenka_[id_transakcie].txt a zrusi Kosik
 procedure TForm1.zaplatitClick(Sender: TObject);
 var
-   iPredaj, riadkov, statRiadkov, povMnozstvo, iVTovary,
-     medzK1, medzK2, medzK3, sepLine, iTovaru, dlzCisla: integer;
+   riadkov, statRiadkov, povMnozstvo, iVTovary,
+     medzK1, medzK2, medzK3, sepLine, dlzCisla: int64;
    transID: int64;
+   iPredaj, iTovaru: integer;
    aktDatum: TDateTime;
    statStrList, skladStrList, uctStrList: TStringList;
    skladOldRiadok, skladNewRiadok, riadokUctu: string;
@@ -632,6 +633,9 @@ begin
 
     //vytvorenie uctenka_[id_transakcie].txt
     sepLine:= 50;
+    medzK1:= 20;
+    medzK2:= 4;
+    medzK3:= 6;
 
     uctStrList:= TStringList.Create;
     uctStrList.Add('╔═══╗');
@@ -648,9 +652,6 @@ begin
                           intToStr(transID));
     uctStrList.Add(stringOfChar('_',sepLine));
 
-    medzK1:= 20;
-    medzK2:= 4;
-    medzK3:= 6;
     for iTovaru:=0 to kupenychTovarov-1 do begin
         //uctStrList.Add(PKosik[iTovaru].nazov +stringOfChar(' ',medzK1)+
         //intToStr(PKosik[iTovaru].cenaKusPredaj / 100) +' €'+)
