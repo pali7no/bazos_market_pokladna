@@ -253,8 +253,8 @@ begin
     delete(cenaKusPredajString, iZnaku-preskokCennik2+1,
            length(cenaKusPredajString) - (iZnaku-preskokCennik2));
 
-    Tovary[iTovaru].cenaKusNakup:= strToCurr(cenaKusNakupString);
-    Tovary[iTovaru].cenaKusPredaj:= strToCurr(cenaKusPredajString);
+    Tovary[iTovaru].cenaKusNakup:= strToCurr(cenaKusNakupString) {$IFDEF UNIX} / 100 {$ENDIF};
+    Tovary[iTovaru].cenaKusPredaj:= strToCurr(cenaKusPredajString) {$IFDEF UNIX} / 100 {$ENDIF};
     Form1.Ponuka.Cells[2, iRiadku]:= {floatToStr(Tovary[iTovaru].cenaKusPredaj);}
     CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
 end;
@@ -698,4 +698,3 @@ begin
 end;
 
 end.
-//pokuspokus branch merge

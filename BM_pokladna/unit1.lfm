@@ -4,16 +4,17 @@ object Form1: TForm1
   Top = 115
   Width = 946
   Caption = 'Pokladna'
-  ClientHeight = 552
+  ClientHeight = 549
   ClientWidth = 946
   Menu = Lista
   OnCreate = FormCreate
-  LCLVersion = '1.4.0.4'
+  LCLVersion = '1.8.2.0'
   object Ponuka: TStringGrid
     Left = 16
     Height = 224
     Top = 64
-    Width = 480
+    Width = 488
+    Align = alCustom
     ColCount = 4
     Columns = <    
       item
@@ -93,7 +94,7 @@ object Form1: TForm1
   end
   object Edit1: TEdit
     Left = 24
-    Height = 23
+    Height = 27
     Top = 0
     Width = 120
     TabOrder = 6
@@ -101,7 +102,7 @@ object Form1: TForm1
   end
   object Edit2: TEdit
     Left = 152
-    Height = 23
+    Height = 27
     Top = 0
     Width = 120
     TabOrder = 7
