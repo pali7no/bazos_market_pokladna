@@ -20,6 +20,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="565"/>
         <CursorPos X="39" Y="573"/>
         <UsageCount Value="67"/>
@@ -73,16 +74,19 @@
       </Unit7>
       <Unit8>
         <Filename Value="backup\unit1.pas"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <TopLine Value="635"/>
         <CursorPos X="2" Y="635"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit8>
     </Units>
-    <JumpHistory Count="30" HistoryIndex="29">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
         <Filename Value="unit1.pas"/>
         <Caret Line="632" Column="76" TopLine="618"/>
@@ -197,12 +201,8 @@
       </Position28>
       <Position29>
         <Filename Value="backup\unit1.pas"/>
-        <Caret TopLine="120"/>
-      </Position29>
-      <Position30>
-        <Filename Value="backup\unit1.pas"/>
         <Caret Line="632" Column="11" TopLine="625"/>
-      </Position30>
+      </Position29>
     </JumpHistory>
   </ProjectSession>
   <Debugging>
