@@ -13,7 +13,7 @@ object Form1: TForm1
     Left = 16
     Height = 224
     Top = 64
-    Width = 488
+    Width = 496
     Align = alCustom
     ColCount = 4
     Columns = <    
@@ -31,7 +31,7 @@ object Form1: TForm1
       end    
       item
         Title.Caption = 'skladom'
-        Width = 59
+        Width = 67
       end>
     DefaultColWidth = 150
     FixedCols = 0
@@ -44,7 +44,7 @@ object Form1: TForm1
       285
       65
       67
-      59
+      67
     )
   end
   object zobrazOvocie: TButton
@@ -112,7 +112,7 @@ object Form1: TForm1
     Left = 512
     Height = 224
     Top = 64
-    Width = 400
+    Width = 392
     ColCount = 4
     Columns = <    
       item
@@ -129,7 +129,7 @@ object Form1: TForm1
       end    
       item
         Title.Caption = 'spolu'
-        Width = 92
+        Width = 87
       end>
     DefaultColWidth = 150
     FixedCols = 0
@@ -142,7 +142,7 @@ object Form1: TForm1
       181
       52
       67
-      92
+      87
     )
     Cells = (
       4
