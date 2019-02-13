@@ -1,20 +1,24 @@
 object Form1: TForm1
-  Left = 399
+  Left = 420
   Height = 572
-  Top = 115
+  Hint = 'vyhlPodlaKodu'
+  Top = 27
   Width = 946
   Caption = 'Pokladna'
   ClientHeight = 549
   ClientWidth = 946
   Menu = Lista
   OnCreate = FormCreate
+  ShowHint = True
   LCLVersion = '1.8.2.0'
   object Ponuka: TStringGrid
     Left = 16
     Height = 224
+    Hint = 'Kliknutim zvolte tovar.'
     Top = 64
-    Width = 488
+    Width = 496
     Align = alCustom
+    CellHintPriority = chpAll
     ColCount = 4
     Columns = <    
       item
@@ -31,20 +35,19 @@ object Form1: TForm1
       end    
       item
         Title.Caption = 'skladom'
-        Width = 59
+        Width = 67
       end>
     DefaultColWidth = 150
     FixedCols = 0
-    ParentShowHint = False
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll, goCellHints, goTruncCellHints]
     RowCount = 10
-    ShowHint = True
     TabOrder = 0
     OnClick = PonukaClick
     ColWidths = (
       285
       65
       67
-      59
+      67
     )
   end
   object zobrazOvocie: TButton
@@ -92,27 +95,35 @@ object Form1: TForm1
     OnClick = zobrazVsetkoClick
     TabOrder = 5
   end
-  object Edit1: TEdit
+  object vyhlPodlaKodu: TEdit
     Left = 24
     Height = 27
+    Hint = 'vyhlPodlaKodu'
     Top = 0
     Width = 120
+    NumbersOnly = True
+    OnChange = vyhlPodlaKoduChange
+    OnClick = vyhlPodlaKoduClick
     TabOrder = 6
     Text = 'vyhlPodlaKodu'
+    TextHint = 'vyhlPodlaKodu'
   end
-  object Edit2: TEdit
+  object vyhlPodlaNazvu: TEdit
     Left = 152
     Height = 27
+    Hint = 'vyhlPodlaNazvu'
     Top = 0
     Width = 120
+    OnClick = vyhlPodlaNazvuClick
     TabOrder = 7
     Text = 'vyhlPodlaNazvu'
+    TextHint = 'vyhlPodlaNazvu'
   end
   object Kosik: TStringGrid
     Left = 512
     Height = 224
     Top = 64
-    Width = 400
+    Width = 392
     ColCount = 4
     Columns = <    
       item
@@ -129,7 +140,7 @@ object Form1: TForm1
       end    
       item
         Title.Caption = 'spolu'
-        Width = 92
+        Width = 87
       end>
     DefaultColWidth = 150
     FixedCols = 0
@@ -142,7 +153,7 @@ object Form1: TForm1
       181
       52
       67
-      92
+      87
     )
     Cells = (
       4
@@ -170,12 +181,15 @@ object Form1: TForm1
     TabOrder = 9
   end
   object zaplatit: TButton
-    Left = 616
-    Height = 25
-    Top = 312
-    Width = 75
-    Caption = 'zaplatit'
+    Left = 512
+    Height = 57
+    Top = 328
+    Width = 392
+    Caption = 'Zaplatiť'
+    Font.Height = -33
+    Font.Name = 'Georgia'
     OnClick = zaplatitClick
+    ParentFont = False
     TabOrder = 10
   end
   object Memo1: TMemo
@@ -195,6 +209,28 @@ object Form1: TForm1
     Width = 170
     Caption = 'menoPokladnika'
     TabOrder = 12
+  end
+  object celkCenaL: TLabel
+    Left = 696
+    Height = 23
+    Top = 296
+    Width = 231
+    Caption = 'spolu cely nakup: 0,00 €'
+    Font.Height = -19
+    Font.Name = '@cour'
+    ParentColor = False
+    ParentFont = False
+  end
+  object EditButton1: TEditButton
+    Left = 384
+    Height = 27
+    Top = 0
+    Width = 103
+    ButtonWidth = 23
+    MaxLength = 0
+    NumGlyphs = 1
+    PasswordChar = #0
+    TabOrder = 13
   end
   object Lista: TMainMenu
     left = 234

@@ -55,6 +55,8 @@ type
     procedure NacitaniePolozkySKLADtxt(iTovaru: integer);
     procedure NacitaniePolozkyCENNIKtxt(iTovaru: integer);
     procedure VycistitPonuku;
+    procedure vyhlPodlaKoduClick(Sender: TObject);
+    procedure vyhlPodlaNazvuClick(Sender: TObject);
     procedure zaplatitClick(Sender: TObject);
     procedure zobrazIneClick(Sender: TObject);
     procedure zobrazOvocieClick(Sender: TObject);
@@ -120,6 +122,9 @@ begin
      celkCena:= 0;
      celkCenaL.Caption:= 'spolu cely nakup: ' +
                               currToStrF(celkCena, ffFixed, 2) + ' €';
+     vyhlPodlaKodu.Clear;
+     vyhlPodlaNazvu.Clear;
+
      //prazdny tovar inicializacia
      prazdnyTovar.cenaKusNakup:= 0;
      prazdnyTovar.cenaKusPredaj:= 0;
@@ -143,32 +148,6 @@ begin
      //for sgStlpce:=0 to 3 do
      //    for sgRiadky:=1 to 9 do
      //        Ponuka.Cells[sgStlpce,sgRiadky]:= intToStr(sgStlpce+sgRiadky+1);
-end;
-
-procedure TForm1.vyhlPodlaKoduChange(Sender: TObject);
-var
-    iTovaru, mocnina: integer;
-begin
-     if (vyhlPodlaKodu.Text = 'vyhlPodlaKodu') then begin
-         vyhlPodlaKodu.Clear;
-     end;
-
-     VycistitPonuku;
-     //hlada kod
-     for iTovaru:=0 to tovarov-1 do begin
-         for mocnina:=2 downto 0 do begin
-             if (Tovary[iTovaru].kod div Round(intPower(10, mocnina)) =
-                strToInt(vyhlPodlaKodu.Text)) then begin
-                Ponuka.RowCount:= Ponuka.RowCount + 1;
-                Ponuka.Cells[0, Ponuka.RowCount - 1]:= Tovary[iTovaru].nazov;
-                Ponuka.Cells[1, Ponuka.RowCount - 1]:= intToStr(Tovary[iTovaru].kod);
-                Ponuka.Cells[2, Ponuka.RowCount - 1]:= currToStrF(
-                          Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
-                Ponuka.Cells[3, Ponuka.RowCount - 1]:= intToStr(Tovary[iTovaru].mnozstvo);
-                exit;
-             end;
-         end;
-     end;
 end;
 
 procedure TForm1.nacitanieCelejDatabazy;
@@ -839,6 +818,68 @@ begin
         PKosik[iPredaj].mnozstvo:= -PKosik[iPredaj].mnozstvo;
     end;
     zrusitNakup;
+end;
+
+procedure TForm1.vyhlPodlaKoduClick(Sender: TObject);
+begin
+   vyhlPodlaKodu.Clear;
+end;
+
+procedure TForm1.vyhlPodlaNazvuClick(Sender: TObject);
+begin
+     vyhlPodlaNazvu.Clear;
+end;
+
+procedure TForm1.vyhlPodlaKoduChange(Sender: TObject);
+var
+    iTovaru, mocnina, hladanyKod, najdenych: integer;
+begin
+     //inicializacia
+     najdenych:= 0;
+
+     //nezmyselne pripady
+     if (vyhlPodlaKodu.Text = '') then begin
+         zobrazVsetkoClick(vyhlPodlaKodu);
+         exit;
+     end;
+     if (vyhlPodlaKodu.Text = 'vyhlPodlaKodu') then begin
+         vyhlPodlaKodu.Clear;
+     end;
+
+
+
+     VycistitPonuku;
+     if tryStrToInt(vyhlPodlaKodu.Text, hladanyKod) and
+        (hladanyKod div 1000 < 1) then begin
+         //hlada kod
+         for iTovaru:=0 to tovarov-1 do begin
+             for mocnina:=2 downto 0 do begin
+                 if (Tovary[iTovaru].kod div Round(intPower(10, mocnina)) =
+                    hladanyKod) then begin
+                    inc(najdenych);
+                    Ponuka.RowCount:= najdenych + 1;  //inc(Ponuka.RowCount)
+                    Ponuka.Cells[0, najdenych]:= Tovary[iTovaru].nazov;
+                    Ponuka.Cells[1, najdenych]:= intToStr(Tovary[iTovaru].kod);
+                    Ponuka.Cells[2, najdenych]:= currToStrF(
+                              Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
+                    Ponuka.Cells[3, Ponuka.RowCount - 1]:= intToStr(Tovary[iTovaru].mnozstvo);
+                    continue;
+                 end;
+             end;
+         end;
+         if (najdenych = 0) then begin
+            Ponuka.RowCount:= 2;
+            Ponuka.Cells[0, 1]:= 'Tovar s kodom ' + vyhlPodlaKodu.text +
+                            ' neexistuje.';
+         end;
+     end else begin
+         ShowMessage('Zadajte maximalne 3-ciferne cislo.');
+         vyhlPodlaKodu.Clear;
+         //umysel je dat kurzor prec, ale to sa nedari
+         //vyhlPodlaKodu.Invalidate;
+         //Memo1.SelLength:= 0;
+         //Memo1.SelStart:= Length(Memo1.Text);
+     end;
 end;
 
 procedure TForm1.MenuItem1Click(Sender: TObject);
