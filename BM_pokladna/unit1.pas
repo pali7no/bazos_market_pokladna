@@ -9,6 +9,7 @@ uses
      Grids, Menus, ExtCtrls, EditBtn, LazFileUtils, LazUtf8, Math;
 const
   preskokKod = 4;
+  //NoSelection: TGridRect = (Left: 0; Top: -1; Right: 0; Bottom: -1);
 
 type
   tovarTyp = record
@@ -28,47 +29,56 @@ type
     EditButton1: TEditButton;
     Lista: TMainMenu;
     Memo1: TMemo;
-    MenuItem1: TMenuItem;
+    koniec: TMenuItem;
     MenuItem2: TMenuItem;
-    MenuItem3: TMenuItem;
-    MenuItem4: TMenuItem;
-    MenuItem5: TMenuItem;
+    vyhlPodlaKoduMenu: TMenuItem;
+    vyhlPodlaNazvuMenu: TMenuItem;
+    odhlasPokladnika: TMenuItem;
     menoPokladnika: TPanel;
     zaplatit: TButton;
-    zobrazOvocie: TButton;
-    zobrazZelenina: TButton;
-    zobrazPecivo: TButton;
-    zobrazIne: TButton;
+    zobraz0Kat: TButton;
+    zobraz1Kat: TButton;
+    zobraz2Kat: TButton;
+    zobraz3Kat: TButton;
     zobrazVsetko: TButton;
     zrusNakup: TButton;
-    vyhlPodlaKodu: TEdit;
-    vyhlPodlaNazvu: TEdit;
+    vyhlPodlaKoduEdit: TEdit;
+    vyhlPodlaNazvuEdit: TEdit;
     Ponuka: TStringGrid;
     Kosik: TStringGrid;
-    procedure vyhlPodlaKoduChange(Sender: TObject);
+    function jeSlovo(inputString: string): boolean;
+    procedure menoPokladnikaClick(Sender: TObject);
+    procedure odhlasPokladnikaClick(Sender: TObject);
+    procedure simpleReloadClick(Sender: TObject);
+    procedure vyhlPodlaNazvuMenuClick(Sender: TObject);
+    procedure vyhlPodlaKoduMenuClick(Sender: TObject);
+    procedure vyhlPodlaKoduEditChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure KosikClick(Sender: TObject);
-    procedure MenuItem1Click(Sender: TObject);
+    procedure koniecClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure PonukaClick(Sender: TObject);
     procedure NacitaniePolozkyTOVARtxt(iTovaru: integer);
     procedure NacitaniePolozkySKLADtxt(iTovaru: integer);
     procedure NacitaniePolozkyCENNIKtxt(iTovaru: integer);
     procedure VycistitPonuku;
-    procedure vyhlPodlaKoduClick(Sender: TObject);
-    procedure vyhlPodlaNazvuClick(Sender: TObject);
+    procedure vyhlPodlaKoduEditClick(Sender: TObject);
+    procedure vyhlPodlaNazvuEditChange(Sender: TObject);
+    procedure vyhlPodlaNazvuEditClick(Sender: TObject);
     procedure zaplatitClick(Sender: TObject);
-    procedure zobrazIneClick(Sender: TObject);
-    procedure zobrazOvocieClick(Sender: TObject);
-    procedure zobrazPecivoClick(Sender: TObject);
+    procedure zobraz3KatClick(Sender: TObject);
+    procedure zobraz0KatClick(Sender: TObject);
+    procedure zobraz2KatClick(Sender: TObject);
     procedure zobrazVsetkoClick(Sender: TObject);
-    procedure zobrazZeleninaClick(Sender: TObject);
+    procedure zobraz1KatClick(Sender: TObject);
     procedure ZobrazJedenDruh(druh: integer);
     procedure zrusNakupClick(Sender: TObject);
     procedure zrusitPolozkuClick(Sender: TObject);
     procedure zrusitNakup;
     procedure nacitaniePoloziekSKLADtxtStrList;
     procedure nacitanieCelejDatabazy;
+    procedure vyhlPodlaKodu(userInput: string; Sender: TObject);
+    procedure vyhlPodlaNazvu(userInput: string; Sender: TObject);
     function dlzkaCisla(cislo: integer): integer;
   private
 
@@ -97,7 +107,11 @@ var
     odpadChar: char;
     odpadString, kodString, nazovString, kodNazovString: string;
     zadalMeno: boolean;
+    katStrList: TStringList;
 begin
+    //Ponuka.Selection:= NoSelection;
+   //Ponuka.Selection;
+
     //prihlasnenie pokladnika
     zadalMeno:= false;
     pokladnik:= '';
@@ -122,8 +136,17 @@ begin
      celkCena:= 0;
      celkCenaL.Caption:= 'spolu cely nakup: ' +
                               currToStrF(celkCena, ffFixed, 2) + ' €';
-     vyhlPodlaKodu.Clear;
-     vyhlPodlaNazvu.Clear;
+     vyhlPodlaKoduEdit.Clear;
+     vyhlPodlaNazvuEdit.Clear;
+
+     //kategorie inciializacia
+     katStrList:= TStringList.Create;
+     katStrList.LoadFromFile('KATEGORIE.txt');
+     zobraz0Kat.Caption:= katStrList[0];
+     zobraz1Kat.Caption:= katStrList[1];
+     zobraz2Kat.Caption:= katStrList[2];
+     zobraz3Kat.Caption:= katStrList[3];
+
 
      //prazdny tovar inicializacia
      prazdnyTovar.cenaKusNakup:= 0;
@@ -365,25 +388,25 @@ begin
     end;
 end;
 
-procedure TForm1.zobrazOvocieClick(Sender: TObject);
+procedure TForm1.zobraz0KatClick(Sender: TObject);
 begin
     VycistitPonuku;
     ZobrazJedenDruh(1); //1 = ovocie
 end;
 
-procedure TForm1.zobrazZeleninaClick(Sender: TObject);
+procedure TForm1.zobraz1KatClick(Sender: TObject);
 begin
     VycistitPonuku;
     ZobrazJedenDruh(2); //2 = zelenina
 end;
 
-procedure TForm1.zobrazPecivoClick(Sender: TObject);
+procedure TForm1.zobraz2KatClick(Sender: TObject);
 begin
     VycistitPonuku;
     ZobrazJedenDruh(3); //3 = pecivo
 end;
 
-procedure TForm1.zobrazIneClick(Sender: TObject);
+procedure TForm1.zobraz3KatClick(Sender: TObject);
 begin
     VycistitPonuku;
     ZobrazJedenDruh(4); //4 = ine
@@ -464,7 +487,7 @@ end;
 procedure TForm1.PonukaClick(Sender: TObject);
 var
    iStlpca, iRiadku, iVybratehoVTovary, iVybratehoVPKosik, iTovaru
-     , ziadaneMnozstvo, chcemViac: Integer;
+     , ziadaneMnozstvo, chcemViac, chceZobrazitVsetko: Integer;
    inputRiadok, oznamKlikMimoNazvu: string;
    novyTovar, niecoZadal, zadalInt: boolean;
 begin
@@ -475,6 +498,18 @@ begin
 
      iRiadku:= Ponuka.Row;
      iStlpca:= Ponuka.Col;
+
+     if (Ponuka.RowCount > 1) and (Ponuka.Cells[1, 1] = 'XXX') then begin
+        chceZobrazitVsetko := messageDlg('Udaje, ktore hladate neexistuju. ' +
+                          ' Chcete zobrazit Ponuku?'
+                          ,mtCustom, mbOKCancel, 0);
+        if (chceZobrazitVsetko = mrOK) then begin
+           vyhlPodlaKoduEdit.Clear;
+           vyhlPodlaNazvuEdit.Clear;
+           zobrazVsetkoClick(Ponuka);
+        end;
+        exit;
+     end;
 
      //najdenie tovaru v Tovary[] a PKosik[]
      iTovaru:= 0;
@@ -820,17 +855,19 @@ begin
     zrusitNakup;
 end;
 
-procedure TForm1.vyhlPodlaKoduClick(Sender: TObject);
+procedure TForm1.vyhlPodlaKoduEditClick(Sender: TObject);
 begin
-   vyhlPodlaKodu.Clear;
+   vyhlPodlaKoduEdit.Clear;
 end;
 
-procedure TForm1.vyhlPodlaNazvuClick(Sender: TObject);
+procedure TForm1.vyhlPodlaNazvuEditClick(Sender: TObject);
 begin
-     vyhlPodlaNazvu.Clear;
+     vyhlPodlaNazvuEdit.Clear;
 end;
 
-procedure TForm1.vyhlPodlaKoduChange(Sender: TObject);
+procedure TForm1.vyhlPodlaKodu(userInput: string; Sender: TObject);
+//musi prist prir. cislo a: 100 <= a < 500
+//zobrazuje do Ponuka (TStringGrid)
 var
     iTovaru, mocnina, hladanyKod, najdenych: integer;
 begin
@@ -838,19 +875,16 @@ begin
      najdenych:= 0;
 
      //nezmyselne pripady
-     if (vyhlPodlaKodu.Text = '') then begin
-         zobrazVsetkoClick(vyhlPodlaKodu);
+     //if  ((Sender = vyhlPodlaKoduEdit) and (vyhlPodlaKoduEdit.Text = '')) or
+     //    ((Sender = vyhlPodlaKoduMenu) and (najdenych = 5)) //zatial blbost
+     if (userInput = '') then begin
+         zobrazVsetkoClick(vyhlPodlaKoduEdit);
          exit;
      end;
-     if (vyhlPodlaKodu.Text = 'vyhlPodlaKodu') then begin
-         vyhlPodlaKodu.Clear;
-     end;
-
-
 
      VycistitPonuku;
-     if tryStrToInt(vyhlPodlaKodu.Text, hladanyKod) and
-        (hladanyKod div 1000 < 1) then begin
+     if tryStrToInt(userInput, hladanyKod) and
+        (0 <= (hladanyKod div 100)) and ((hladanyKod div 100) < 5) then begin
          //hlada kod
          for iTovaru:=0 to tovarov-1 do begin
              for mocnina:=2 downto 0 do begin
@@ -859,30 +893,166 @@ begin
                     inc(najdenych);
                     Ponuka.RowCount:= najdenych + 1;  //inc(Ponuka.RowCount)
                     Ponuka.Cells[0, najdenych]:= Tovary[iTovaru].nazov;
+                    if (Tovary[iTovaru].jeAktivny = false) then begin
+                       Ponuka.Cells[0, najdenych]:= Ponuka.Cells[0, najdenych] + '*';
+                    end;
                     Ponuka.Cells[1, najdenych]:= intToStr(Tovary[iTovaru].kod);
                     Ponuka.Cells[2, najdenych]:= currToStrF(
                               Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
-                    Ponuka.Cells[3, Ponuka.RowCount - 1]:= intToStr(Tovary[iTovaru].mnozstvo);
+                    Ponuka.Cells[3, Ponuka.RowCount - 1]:=
+                                    intToStr(Tovary[iTovaru].mnozstvo);
+                    Tovary[iTovaru].iVPonuke:= najdenych;
                     continue;
                  end;
              end;
          end;
          if (najdenych = 0) then begin
             Ponuka.RowCount:= 2;
-            Ponuka.Cells[0, 1]:= 'Tovar s kodom ' + vyhlPodlaKodu.text +
+            Ponuka.Cells[0, 1]:= 'Tovar s kodom ' + intToStr(hladanyKod) +
                             ' neexistuje.';
+            Ponuka.Cells[1, 1]:= 'XXX';
+            Ponuka.Cells[2, 1]:= 'XX,XX €';
+            Ponuka.Cells[3, 1]:= 'XXX';
+
          end;
      end else begin
-         ShowMessage('Zadajte maximalne 3-ciferne cislo.');
-         vyhlPodlaKodu.Clear;
+         ShowMessage('Zadajte cislo 100 <= cislo < 500 (pre expertov: ' +
+                              'Zadajte take kladne, cele cislo a, ' +
+                              'pre ktore plati: ' + #13#10 + '0,2 < a/500 < 0,998)');
+         vyhlPodlaKoduEdit.Clear;
          //umysel je dat kurzor prec, ale to sa nedari
-         //vyhlPodlaKodu.Invalidate;
+         //vyhlPodlaKoduEdit.Invalidate;
          //Memo1.SelLength:= 0;
          //Memo1.SelStart:= Length(Memo1.Text);
      end;
 end;
 
-procedure TForm1.MenuItem1Click(Sender: TObject);
+procedure TForm1.vyhlPodlaKoduEditChange(Sender: TObject);
+var
+    iTovaru, mocnina, hladanyKod, najdenych: integer;
+begin
+     vyhlPodlaNazvuEdit.Clear;
+     if (vyhlPodlaKoduEdit.Text = 'vyhlPodlaKodu') then begin
+         vyhlPodlaKoduEdit.Clear;
+         exit;
+     end;
+
+     vyhlPodlaKodu(vyhlPodlaKoduEdit.Text, vyhlPodlaKoduEdit);
+end;
+
+procedure TForm1.vyhlPodlaKoduMenuClick(Sender: TObject);
+var
+   chceHladat: boolean;
+   inputString: string;
+begin
+     chceHladat:= inputQuery('Hladanie kodu', 'Zadajte hladany kod', inputString);
+     if not chceHladat then begin
+         exit;
+     end;
+     vyhlPodlaKodu(inputString, vyhlPodlaKoduMenu);
+end;
+
+procedure TForm1.vyhlPodlaNazvu(userInput: string; Sender: TObject);
+var
+    hlSlovo, nazovTovaru: string;
+    iTovaru, najdenych: integer;
+begin
+     //inicializacia
+     najdenych:= 0;
+     if (userInput = '') then begin
+        exit;
+     end;
+
+     VycistitPonuku;
+     if jeSlovo(userInput) then begin
+         for iTovaru:=0 to tovarov-1 do begin
+             nazovTovaru:= Tovary[iTovaru].nazov;
+             if (length(userInput) > length(nazovTovaru)) then begin
+                continue;
+             end;
+             //1. cast nazvov:
+             nazovTovaru:= copy(nazovTovaru, 1, length(userInput));
+             setLength(nazovTovaru, length(userInput));
+
+             if (userInput = nazovTovaru) then begin
+                 inc(najdenych);
+                 Ponuka.RowCount:= najdenych + 1;  //inc(Ponuka.RowCount)
+                 Ponuka.Cells[0, najdenych]:= Tovary[iTovaru].nazov;
+                 if (Tovary[iTovaru].jeAktivny = false) then begin
+                     Ponuka.Cells[0, najdenych]:= Ponuka.Cells[0, najdenych] + '*';
+                 end;
+                 Ponuka.Cells[1, najdenych]:= intToStr(Tovary[iTovaru].kod);
+                 Ponuka.Cells[2, najdenych]:= currToStrF(
+                              Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
+                 Ponuka.Cells[3, Ponuka.RowCount - 1]:=
+                                 intToStr(Tovary[iTovaru].mnozstvo);
+                 Tovary[iTovaru].iVPonuke:= najdenych;
+             end;
+         end;
+     end else begin
+         ShowMessage('Zadajte 1. SLOVO nazvu.');
+         vyhlPodlaNazvuEdit.Clear;
+     end;
+end;
+
+procedure TForm1.vyhlPodlaNazvuEditChange(Sender: TObject);
+var
+    hlSlovo: string;
+begin
+     vyhlPodlaKoduEdit.Clear;
+     hlSlovo:= vyhlPodlaNazvuEdit.Text;
+     vyhlPodlaNazvu(hlSlovo, vyhlPodlaNazvuEdit);
+end;
+
+procedure TForm1.vyhlPodlaNazvuMenuClick(Sender: TObject);
+var
+   chceHladat: boolean;
+   inputString: string;
+begin
+     chceHladat:= inputQuery('Hladanie nazvu', 'Zadajte hladany nazov', inputString);
+     if not chceHladat then begin
+         exit;
+     end;
+     vyhlPodlaNazvu(inputString, vyhlPodlaNazvuMenu);
+end;
+
+function TForm1.jeSlovo(inputString: string): boolean;
+var
+   iVString: integer;
+begin
+     for iVString:=1 to length(inputString) do begin
+         if not (inputString[iVString] in ['a'..'z','A'..'Z']) then begin
+            exit(false);
+            end;
+     end;
+
+     exit(true);
+end;
+
+procedure TForm1.menoPokladnikaClick(Sender: TObject);
+var
+   noveMeno: string;
+   chceZmenitMeno: boolean;
+begin
+     if (inputQuery('Zmena mena pokladnika', 'Zadajte nove meno pokladnika',
+                     noveMeno)) then begin
+         pokladnik:= noveMeno;
+         menoPokladnika.Caption:= 'Meno pokladnika: ' + pokladnik;
+     end;
+end;
+
+procedure TForm1.odhlasPokladnikaClick(Sender: TObject);
+begin
+    zrusitNakup;
+    FormCreate(odhlasPokladnika);
+end;
+
+procedure TForm1.simpleReloadClick(Sender: TObject);
+begin
+
+end;
+
+procedure TForm1.koniecClick(Sender: TObject);
 begin
      close;
 end;

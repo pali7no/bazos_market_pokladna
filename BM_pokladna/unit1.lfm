@@ -50,40 +50,40 @@ object Form1: TForm1
       67
     )
   end
-  object zobrazOvocie: TButton
+  object zobraz0Kat: TButton
     Left = 24
     Height = 25
     Top = 24
     Width = 75
     Caption = 'Ovocie'
-    OnClick = zobrazOvocieClick
+    OnClick = zobraz0KatClick
     TabOrder = 1
   end
-  object zobrazZelenina: TButton
+  object zobraz1Kat: TButton
     Left = 104
     Height = 25
     Top = 24
     Width = 75
     Caption = 'Zelenina'
-    OnClick = zobrazZeleninaClick
+    OnClick = zobraz1KatClick
     TabOrder = 2
   end
-  object zobrazPecivo: TButton
+  object zobraz2Kat: TButton
     Left = 184
     Height = 25
     Top = 24
     Width = 75
     Caption = 'Pecivo'
-    OnClick = zobrazPecivoClick
+    OnClick = zobraz2KatClick
     TabOrder = 3
   end
-  object zobrazIne: TButton
+  object zobraz3Kat: TButton
     Left = 264
     Height = 25
     Top = 24
     Width = 75
     Caption = 'Ine'
-    OnClick = zobrazIneClick
+    OnClick = zobraz3KatClick
     TabOrder = 4
   end
   object zobrazVsetko: TButton
@@ -95,28 +95,29 @@ object Form1: TForm1
     OnClick = zobrazVsetkoClick
     TabOrder = 5
   end
-  object vyhlPodlaKodu: TEdit
+  object vyhlPodlaKoduEdit: TEdit
     Left = 24
     Height = 27
     Hint = 'vyhlPodlaKodu'
     Top = 0
     Width = 120
     NumbersOnly = True
-    OnChange = vyhlPodlaKoduChange
-    OnClick = vyhlPodlaKoduClick
+    OnChange = vyhlPodlaKoduEditChange
+    OnClick = vyhlPodlaKoduEditClick
     TabOrder = 6
-    Text = 'vyhlPodlaKodu'
+    Text = 'vyhlPodlaKoduEdit'
     TextHint = 'vyhlPodlaKodu'
   end
-  object vyhlPodlaNazvu: TEdit
+  object vyhlPodlaNazvuEdit: TEdit
     Left = 152
     Height = 27
     Hint = 'vyhlPodlaNazvu'
     Top = 0
     Width = 120
-    OnClick = vyhlPodlaNazvuClick
+    OnChange = vyhlPodlaNazvuEditChange
+    OnClick = vyhlPodlaNazvuEditClick
     TabOrder = 7
-    Text = 'vyhlPodlaNazvu'
+    Text = 'vyhlPodlaNazvuEdit'
     TextHint = 'vyhlPodlaNazvu'
   end
   object Kosik: TStringGrid
@@ -209,9 +210,10 @@ object Form1: TForm1
     Width = 170
     Caption = 'menoPokladnika'
     TabOrder = 12
+    OnClick = menoPokladnikaClick
   end
   object celkCenaL: TLabel
-    Left = 696
+    Left = 624
     Height = 23
     Top = 296
     Width = 231
@@ -233,24 +235,27 @@ object Form1: TForm1
     TabOrder = 13
   end
   object Lista: TMainMenu
-    left = 234
-    top = 361
-    object MenuItem5: TMenuItem
+    left = 184
+    top = 496
+    object odhlasPokladnika: TMenuItem
       Caption = 'Odhlas pokladnika'
+      OnClick = odhlasPokladnikaClick
     end
     object MenuItem2: TMenuItem
       Caption = 'vyhladaj'
       OnClick = MenuItem2Click
-      object MenuItem3: TMenuItem
+      object vyhlPodlaKoduMenu: TMenuItem
         Caption = 'podla kodu'
+        OnClick = vyhlPodlaKoduMenuClick
       end
-      object MenuItem4: TMenuItem
+      object vyhlPodlaNazvuMenu: TMenuItem
         Caption = 'podla nazvu'
+        OnClick = vyhlPodlaNazvuMenuClick
       end
     end
-    object MenuItem1: TMenuItem
+    object koniec: TMenuItem
       Caption = 'koniec'
-      OnClick = MenuItem1Click
+      OnClick = koniecClick
     end
   end
 end
