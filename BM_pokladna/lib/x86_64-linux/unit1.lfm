@@ -1,12 +1,12 @@
 object Form1: TForm1
-  Left = 420
-  Height = 572
+  Left = 306
+  Height = 427
   Hint = 'vyhlPodlaKodu'
-  Top = 27
-  Width = 946
+  Top = 163
+  Width = 1055
   Caption = 'Pokladna'
-  ClientHeight = 549
-  ClientWidth = 946
+  ClientHeight = 404
+  ClientWidth = 1055
   Menu = Lista
   OnCreate = FormCreate
   ShowHint = True
@@ -146,7 +146,7 @@ object Form1: TForm1
     DefaultColWidth = 150
     FixedCols = 0
     ParentShowHint = False
-    RowCount = 10
+    RowCount = 1
     ShowHint = True
     TabOrder = 8
     OnClick = KosikClick
@@ -173,7 +173,7 @@ object Form1: TForm1
     )
   end
   object zrusNakup: TButton
-    Left = 680
+    Left = 808
     Height = 25
     Top = 24
     Width = 75
@@ -194,9 +194,9 @@ object Form1: TForm1
     TabOrder = 10
   end
   object Memo1: TMemo
-    Left = 24
+    Left = 904
     Height = 240
-    Top = 304
+    Top = 48
     Width = 150
     Lines.Strings = (
       'Memo1'
@@ -204,9 +204,9 @@ object Form1: TForm1
     TabOrder = 11
   end
   object menoPokladnika: TPanel
-    Left = 184
+    Left = 584
     Height = 50
-    Top = 304
+    Top = 8
     Width = 170
     Caption = 'menoPokladnika'
     TabOrder = 12
@@ -235,8 +235,7 @@ object Form1: TForm1
     TabOrder = 13
   end
   object Lista: TMainMenu
-    left = 184
-    top = 496
+    left = 496
     object odhlasPokladnika: TMenuItem
       Caption = 'Odhlas pokladnika'
       OnClick = odhlasPokladnikaClick
