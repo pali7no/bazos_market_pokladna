@@ -1,20 +1,24 @@
 object Form1: TForm1
-  Left = 399
-  Height = 572
-  Top = 115
-  Width = 946
+  Left = 306
+  Height = 427
+  Hint = 'vyhlPodlaKodu'
+  Top = 163
+  Width = 1055
   Caption = 'Pokladna'
-  ClientHeight = 549
-  ClientWidth = 946
+  ClientHeight = 404
+  ClientWidth = 1055
   Menu = Lista
   OnCreate = FormCreate
+  ShowHint = True
   LCLVersion = '1.8.2.0'
   object Ponuka: TStringGrid
     Left = 16
     Height = 224
+    Hint = 'Kliknutim zvolte tovar.'
     Top = 64
-    Width = 488
+    Width = 496
     Align = alCustom
+    CellHintPriority = chpAll
     ColCount = 4
     Columns = <    
       item
@@ -31,88 +35,96 @@ object Form1: TForm1
       end    
       item
         Title.Caption = 'skladom'
-        Width = 59
+        Width = 67
       end>
     DefaultColWidth = 150
     FixedCols = 0
-    ParentShowHint = False
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll, goCellHints, goTruncCellHints]
     RowCount = 10
-    ShowHint = True
     TabOrder = 0
     OnClick = PonukaClick
     ColWidths = (
       285
       65
       67
-      59
+      67
     )
   end
-  object zobrazOvocie: TButton
-    Left = 24
+  object zobraz0Kat: TButton
+    Left = 96
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Ovocie'
-    OnClick = zobrazOvocieClick
+    OnClick = zobraz0KatClick
     TabOrder = 1
   end
-  object zobrazZelenina: TButton
-    Left = 104
+  object zobraz1Kat: TButton
+    Left = 176
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Zelenina'
-    OnClick = zobrazZeleninaClick
+    OnClick = zobraz1KatClick
     TabOrder = 2
   end
-  object zobrazPecivo: TButton
-    Left = 184
+  object zobraz2Kat: TButton
+    Left = 256
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Pecivo'
-    OnClick = zobrazPecivoClick
+    OnClick = zobraz2KatClick
     TabOrder = 3
   end
-  object zobrazIne: TButton
-    Left = 264
+  object zobraz3Kat: TButton
+    Left = 336
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Ine'
-    OnClick = zobrazIneClick
+    OnClick = zobraz3KatClick
     TabOrder = 4
   end
   object zobrazVsetko: TButton
-    Left = 344
+    Left = 416
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Vsetko'
     OnClick = zobrazVsetkoClick
     TabOrder = 5
   end
-  object Edit1: TEdit
+  object vyhlPodlaKoduEdit: TEdit
     Left = 24
     Height = 27
+    Hint = 'vyhlPodlaKodu'
     Top = 0
     Width = 120
+    NumbersOnly = True
+    OnChange = vyhlPodlaKoduEditChange
+    OnClick = vyhlPodlaKoduEditClick
     TabOrder = 6
-    Text = 'vyhlPodlaKodu'
+    Text = 'vyhlPodlaKoduEdit'
+    TextHint = 'vyhlPodlaKodu'
   end
-  object Edit2: TEdit
+  object vyhlPodlaNazvuEdit: TEdit
     Left = 152
     Height = 27
+    Hint = 'vyhlPodlaNazvu'
     Top = 0
     Width = 120
+    OnChange = vyhlPodlaNazvuEditChange
+    OnClick = vyhlPodlaNazvuEditClick
     TabOrder = 7
-    Text = 'vyhlPodlaNazvu'
+    Text = 'vyhlPodlaNazvuEdit'
+    TextHint = 'vyhlPodlaNazvu'
   end
   object Kosik: TStringGrid
     Left = 512
     Height = 224
     Top = 64
-    Width = 400
+    Width = 392
     ColCount = 4
     Columns = <    
       item
@@ -129,12 +141,12 @@ object Form1: TForm1
       end    
       item
         Title.Caption = 'spolu'
-        Width = 92
+        Width = 87
       end>
     DefaultColWidth = 150
     FixedCols = 0
     ParentShowHint = False
-    RowCount = 10
+    RowCount = 1
     ShowHint = True
     TabOrder = 8
     OnClick = KosikClick
@@ -142,7 +154,7 @@ object Form1: TForm1
       181
       52
       67
-      92
+      87
     )
     Cells = (
       4
@@ -161,7 +173,7 @@ object Form1: TForm1
     )
   end
   object zrusNakup: TButton
-    Left = 680
+    Left = 808
     Height = 25
     Top = 24
     Width = 75
@@ -170,18 +182,21 @@ object Form1: TForm1
     TabOrder = 9
   end
   object zaplatit: TButton
-    Left = 616
-    Height = 25
-    Top = 312
-    Width = 75
-    Caption = 'zaplatit'
+    Left = 512
+    Height = 57
+    Top = 328
+    Width = 392
+    Caption = 'Zaplatiť'
+    Font.Height = -33
+    Font.Name = 'Georgia'
     OnClick = zaplatitClick
+    ParentFont = False
     TabOrder = 10
   end
   object Memo1: TMemo
-    Left = 24
+    Left = 904
     Height = 240
-    Top = 304
+    Top = 48
     Width = 150
     Lines.Strings = (
       'Memo1'
@@ -189,32 +204,66 @@ object Form1: TForm1
     TabOrder = 11
   end
   object menoPokladnika: TPanel
-    Left = 184
+    Left = 584
     Height = 50
-    Top = 304
+    Top = 8
     Width = 170
     Caption = 'menoPokladnika'
     TabOrder = 12
+    OnClick = menoPokladnikaClick
+  end
+  object celkCenaL: TLabel
+    Left = 624
+    Height = 23
+    Top = 296
+    Width = 231
+    Caption = 'spolu cely nakup: 0,00 €'
+    Font.Height = -19
+    Font.Name = '@cour'
+    ParentColor = False
+    ParentFont = False
+  end
+  object EditButton1: TEditButton
+    Left = 384
+    Height = 27
+    Top = 0
+    Width = 103
+    ButtonWidth = 23
+    MaxLength = 0
+    NumGlyphs = 1
+    PasswordChar = #0
+    TabOrder = 13
+  end
+  object zobrazTOP: TButton
+    Left = 16
+    Height = 25
+    Top = 32
+    Width = 75
+    Caption = 'TOP'
+    OnClick = zobrazTOPClick
+    TabOrder = 14
   end
   object Lista: TMainMenu
-    left = 234
-    top = 361
-    object MenuItem5: TMenuItem
+    left = 496
+    object odhlasPokladnika: TMenuItem
       Caption = 'Odhlas pokladnika'
+      OnClick = odhlasPokladnikaClick
     end
     object MenuItem2: TMenuItem
       Caption = 'vyhladaj'
       OnClick = MenuItem2Click
-      object MenuItem3: TMenuItem
+      object vyhlPodlaKoduMenu: TMenuItem
         Caption = 'podla kodu'
+        OnClick = vyhlPodlaKoduMenuClick
       end
-      object MenuItem4: TMenuItem
+      object vyhlPodlaNazvuMenu: TMenuItem
         Caption = 'podla nazvu'
+        OnClick = vyhlPodlaNazvuMenuClick
       end
     end
-    object MenuItem1: TMenuItem
+    object koniec: TMenuItem
       Caption = 'koniec'
-      OnClick = MenuItem1Click
+      OnClick = koniecClick
     end
   end
 end

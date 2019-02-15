@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-     Grids, Menus, ExtCtrls, LazFileUtils, LazUtf8;
+     Grids, Menus, ExtCtrls, EditBtn, LazFileUtils, LazUtf8, Math;
 const
   preskokKod = 4;
 
@@ -24,6 +24,8 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    celkCenaL: TLabel;
+    EditButton1: TEditButton;
     Lista: TMainMenu;
     Memo1: TMemo;
     MenuItem1: TMenuItem;
@@ -39,10 +41,11 @@ type
     zobrazIne: TButton;
     zobrazVsetko: TButton;
     zrusNakup: TButton;
-    Edit1: TEdit;
-    Edit2: TEdit;
+    vyhlPodlaKodu: TEdit;
+    vyhlPodlaNazvu: TEdit;
     Ponuka: TStringGrid;
     Kosik: TStringGrid;
+    procedure vyhlPodlaKoduChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure KosikClick(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
@@ -78,6 +81,7 @@ var
   sklad, tovar, cennik, statistiky: textFile;
   tovarov, kupenychTovarov: integer;
   pokladnik: string;
+  celkCena: currency;
 
 implementation
 
@@ -111,9 +115,11 @@ begin
          Tovary[odpadInt].jeAktivny:= false;
      end;
      Kosik.RowCount:= 1; //nadpis
-     Ponuka.SelectedColor:=clBlue;
-     Ponuka.Options := Ponuka.Options + [goDrawFocusSelected];
-
+     Ponuka.SelectedColor:= clBlue;
+     Ponuka.Options:= Ponuka.Options + [goDrawFocusSelected];
+     celkCena:= 0;
+     celkCenaL.Caption:= 'spolu cely nakup: ' +
+                              currToStrF(celkCena, ffFixed, 2) + ' €';
      //prazdny tovar inicializacia
      prazdnyTovar.cenaKusNakup:= 0;
      prazdnyTovar.cenaKusPredaj:= 0;
@@ -137,6 +143,33 @@ begin
      //for sgStlpce:=0 to 3 do
      //    for sgRiadky:=1 to 9 do
      //        Ponuka.Cells[sgStlpce,sgRiadky]:= intToStr(sgStlpce+sgRiadky+1);
+end;
+
+procedure TForm1.vyhlPodlaKoduChange(Sender: TObject);
+var
+    iTovaru, mocnina: integer;
+begin
+     if (vyhlPodlaKodu.Text = 'vyhlPodlaKodu') then begin
+         vyhlPodlaKodu.Clear;
+     end;
+
+     VycistitPonuku;
+     //hlada kod
+     for iTovaru:=0 to tovarov-1 do begin
+         for mocnina:=2 downto 0 do begin
+             if (Tovary[iTovaru].kod div Round(intPower(10, mocnina)) =
+                strToInt(vyhlPodlaKodu.Text)) then begin
+                Ponuka.RowCount:= Ponuka.RowCount + 1;
+                Ponuka.Cells[0, Ponuka.RowCount - 1]:= Tovary[iTovaru].nazov;
+                Ponuka.Cells[1, Ponuka.RowCount - 1]:= intToStr(Tovary[iTovaru].kod);
+                Ponuka.Cells[2, Ponuka.RowCount - 1]:= currToStrF(
+                          Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
+                Ponuka.Cells[3, Ponuka.RowCount - 1]:= intToStr(Tovary[iTovaru].mnozstvo);
+                exit;
+                exit;
+             end;
+         end;
+     end;
 end;
 
 procedure TForm1.nacitanieCelejDatabazy;
@@ -325,7 +358,7 @@ begin
             Ponuka.Cells[iStlpca, iRiadku]:= '';
         end;
     end;
-
+    Ponuka.RowCount:= 1;
     //-1 => nie je v Ponuka
     for iTovaru:=0 to tovarov-1 do Tovary[iTovaru].iVPonuke:= -1;
 end;
@@ -420,6 +453,9 @@ begin
          PKosik[iRiadku]:= prazdnyTovar;
      end;
      kupenychTovarov:= 0;
+     celkCena:= 0;
+     celkCenaL.Caption:= 'spolu cely nakup: ' +
+                         currToStrF(celkCena, ffFixed, 2) + ' €';
 end;
 
 procedure TForm1.zrusNakupClick(Sender: TObject);
@@ -459,7 +495,6 @@ begin
      //iRiadku:= Ponuka.Row;
      //Memo1.Append(intToStr(iStlpca)+' '+intToStr(iRiadku));
 
-     //hard vyberanie
      iRiadku:= Ponuka.Row;
      iStlpca:= Ponuka.Col;
 
@@ -570,6 +605,10 @@ begin
              Kosik.Cells[3, iVybratehoVPKosik+1]:=
                             currToStrF(PKosik[iVybratehoVPKosik].cenaSpolu, ffFixed, 2);
 
+             celkCena:= celkCena + PKosik[iVybratehoVPKosik].cenaKusPredaj * ziadaneMnozstvo;
+             celkCenaL.Caption:= 'spolu cely nakup: ' +
+                                 currToStrF(celkCena, ffFixed, 2) + ' €';
+
              if (novyTovar = true) then begin
                  inc(kupenychTovarov);
              end;
@@ -577,7 +616,7 @@ begin
 
          1: begin
              oznamKlikMimoNazvu:= intToStr(Tovary[iVybratehoVTovary].kod) +
-                  'je kod ' + Tovary[iVybratehoVTovary].nazov +
+                  ' je kod ' + Tovary[iVybratehoVTovary].nazov +
                   '. Na sklade mame ' + intToStr(Tovary[iVybratehoVTovary].mnozstvo) +
                   ' kusov.';
             if (Tovary[iVybratehoVTovary].jeAktivny = false) then begin
@@ -587,9 +626,9 @@ begin
          end;
          2: begin
              oznamKlikMimoNazvu:= currToStrF(Tovary[iVybratehoVTovary].cenaKusPredaj, ffFixed, 2) +
-                               'je cena ' + Tovary[iVybratehoVTovary].nazov +
-                               '. Na sklade mame ' + intToStr(Tovary[iVybratehoVTovary].mnozstvo)
-                               + ' kusov.';
+                 ' je cena ' + Tovary[iVybratehoVTovary].nazov +
+                 '. Na sklade mame ' + intToStr(Tovary[iVybratehoVTovary].mnozstvo)
+                 + ' kusov.';
              if (Tovary[iVybratehoVTovary].jeAktivny = false) then begin
                  oznamKlikMimoNazvu:= oznamKlikMimoNazvu + ' Momentalne sa neda predat.'
              end;
@@ -597,8 +636,8 @@ begin
          end;
          3: begin
              oznamKlikMimoNazvu:= intToStr(Tovary[iVybratehoVTovary].mnozstvo) +
-                               'je mnozstvo ' + Tovary[iVybratehoVTovary].nazov +
-                               ', ktore mame skladom.';
+                 ' je mnozstvo ' + Tovary[iVybratehoVTovary].nazov +
+                 ', ktore mame skladom.';
              if (Tovary[iVybratehoVTovary].jeAktivny = false) then begin
                  oznamKlikMimoNazvu:= oznamKlikMimoNazvu + ' Momentalne sa neda predat.'
              end;
@@ -636,6 +675,10 @@ begin
                Ponuka.Cells[3,Tovary[iVTovary].iVPonuke]:=
                         intToStr(Tovary[iVTovary].mnozstvo);
         end;
+
+        celkCena:= celkCena - PKosik[iVPKosik].cenaSpolu;
+        celkCenaL.Caption:= 'spolu cely nakup: ' + currToStrF(celkCena, ffFixed, 2) +
+                    ' €';
 
         for iPosun:= iVPKosik to kupenychTovarov-2 do begin
             PKosik[iPosun]:= PKosik[iPosun+1];
