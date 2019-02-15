@@ -9,7 +9,7 @@ uses
      Grids, Menus, ExtCtrls, EditBtn, LazFileUtils, LazUtf8, Math;
 const
   preskokKod = 4;
-  //NoSelection: TGridRect = (Left: 0; Top: -1; Right: 0; Bottom: -1);
+  //NoSelection: TGridRect = (Left: 0; zobrazTOP: -1; Right: 0; Bottom: -1);
 
 type
   tovarTyp = record
@@ -30,6 +30,7 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    zobrazTOP: TButton;
     celkCenaL: TLabel;
     EditButton1: TEditButton;
     Lista: TMainMenu;
@@ -55,6 +56,7 @@ type
     procedure menoPokladnikaClick(Sender: TObject);
     procedure odhlasPokladnikaClick(Sender: TObject);
     procedure simpleReloadClick(Sender: TObject);
+    procedure zobrazTOPClick(Sender: TObject);
     procedure vyhlPodlaNazvuMenuClick(Sender: TObject);
     procedure vyhlPodlaKoduMenuClick(Sender: TObject);
     procedure vyhlPodlaKoduEditChange(Sender: TObject);
@@ -100,6 +102,7 @@ var
   tovarov, kupenychTovarov: integer;
   pokladnik: string;
   celkCena: currency;
+  topStrList: TStringList;
 
 implementation
 
@@ -114,6 +117,7 @@ var
     odpadString, kodString, nazovString, kodNazovString: string;
     zadalMeno: boolean;
     katStrList: TStringList;
+
 begin
     //Ponuka.Selection:= NoSelection;
    //Ponuka.Selection;
@@ -138,13 +142,26 @@ begin
          Tovary[odpadInt].povMnozstvo:= -1;
      end;
      Kosik.RowCount:= 1; //nadpis
-     Ponuka.SelectedColor:= clBlue;
-     Ponuka.Options:= Ponuka.Options + [goDrawFocusSelected];
+     //Ponuka.SelectedColor:= clBlue;
+     Ponuka.Options:= Ponuka.Options + {[goDrawFocusSelected] +}
+                      [goRelaxedRowSelect] + [goSmoothScroll] +
+                      [goHeaderHotTracking] + [goHeaderPushedLook] +
+                      [goSelectionActive] + [goCellHints] + [goTruncCellHints] +
+                      [goCellEllipsis] + [goRowHighlight] {+ [goEditing] +
+                      [goRowSelect]};
+     Kosik.Options:= Kosik.Options + {[goDrawFocusSelected] +}
+                      [goRelaxedRowSelect] + [goSmoothScroll] +
+                      [goHeaderHotTracking] + [goHeaderPushedLook] +
+                      [goSelectionActive] + [goCellHints] + [goTruncCellHints] +
+                      [goCellEllipsis] + [goRowHighlight] {+ [goEditing] +
+                      [goRowSelect]};
      celkCena:= 0;
      celkCenaL.Caption:= 'spolu cely nakup: ' +
                               currToStrF(celkCena, ffFixed, 2) + ' €';
      vyhlPodlaKoduEdit.Clear;
      vyhlPodlaNazvuEdit.Clear;
+     topStrList:= TStringList.Create;
+     topStrList.Clear;
 
      //kategorie inciializacia
      katStrList:= TStringList.Create;
@@ -438,6 +455,62 @@ begin
         Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
         Tovary[iTovaru].iVPonuke:= iRiadku;
     end;
+end;
+
+procedure TForm1.zobrazTOPClick(Sender: TObject);
+var
+   iVTOP, iVTovary, iVPKosik: integer;
+   jeVPKosik: boolean;
+   localTopStrList: TStringList;
+begin
+     if not(fileExists('TOP.txt')) then begin
+        ShowMessage('Primalo (<5) predanych tovarov na statistiku.');
+        exit;
+     end;
+
+
+     localTopStrList:= TStringList.Create;
+     localTopStrList.LoadFromFile('TOP.txt');
+     //ak je TOP rovnaky
+     if (localTopStrList = topStrList) then begin
+        exit;
+     end else begin
+         topStrList:= localTopStrList;
+     end;
+
+     vycistitPonuku;
+     Ponuka.RowCount:= 6; //aj s nadpismi (1 Fixed row)
+     for iVTOP:= 0 to 4 do begin
+         iVTovary:= 0;
+         while (Tovary[iVTovary].kod <> strToInt(topStrList[iVTOP])) do begin
+             inc(iVTovary);
+         end;
+         Ponuka.Cells[0, iVTOP + 1]:= Tovary[iVTovary].nazov;
+         Ponuka.Cells[1, iVTOP + 1]:= intToStr(Tovary[iVTovary].kod);
+         Ponuka.Cells[2, iVTOP + 1]:= currToStrF(Tovary[iVTovary].cenaKusPredaj,
+                                         ffFixed, 2);
+         Ponuka.Cells[3, iVTOP + 1]:= intToStr(Tovary[iVTovary].mnozstvo);
+         if  not Tovary[iVTovary].jeAktivny then begin
+             Ponuka.Cells[0, iVTOP + 1]:= Ponuka.Cells[0, iVTOP + 1] + '*';
+             Ponuka.Cells[2, iVTOP + 1]:= '';
+         end;
+         Tovary[iVTovary].iVPonuke:= iVTOP + 1;
+
+         //indexy pridajme i do PKosik
+         jeVPKosik:= false;
+         iVPKosik:= 0;
+         while {(not jevPKosik) and} (iVPKosik < kupenychTovarov) do begin
+             if (PKosik[iVPKosik].kod <> strToInt(topStrList[iVTOP])) then begin
+                inc(iVPKosik);
+             end else begin
+                 jeVPKosik:= true;
+                 break;
+             end;
+         end;
+         if (jeVPKosik) then begin
+            PKosik[iVPKosik].iVPonuke:= iVTOP + 1;
+         end;
+     end;
 end;
 
 procedure TForm1.zrusitNakup;
@@ -752,7 +825,8 @@ procedure TForm1.zaplatitClick(Sender: TObject);
 //uctenka_[id_transakcie].txt a zrusi Kosik
 var
    riadkov, statRiadkov, mnozstvoSKLADtxt, iVTovary,
-     medzK1, medzK2, medzK3, sepLine, dlzCisla: integer;
+     medzK1, medzK2, medzE, sepLine, dlzCisla, chcePlatit,
+     odsadenieLoga: integer;
    transID: qword;
    iPredaj, iTovaru: integer;
    aktDatum: TDateTime;
@@ -760,6 +834,11 @@ var
    skladOldRiadok, skladNewRiadok, riadokUctu: string;
    uctenka: textFile;
 begin
+    chcePlatit := messageDlg('Naozaj chcete zaplatit cely nakup?'
+             ,mtCustom, mbOKCancel, 0);
+    if (chcePlatit = mrCancel) then begin
+        exit;
+    end;
 
     //testy
     //Memo1.Append(DateToStr(Now));
@@ -823,17 +902,19 @@ begin
     skladStrList.Free;
 
     //vytvorenie uctenka_[id_transakcie].txt
-    sepLine:= 35;
-    medzK1:= 10;
-    medzK2:= 4;
-    medzK3:= 10;
+    odsadenieLoga:= 16;
+    sepLine:= 44;
+    medzK1:= 12;
+    medzK2:= 6;
+    medzE:= 11;
 
     uctStrList:= TStringList.Create;
-    uctStrList.Add('╔═══╗');
-    uctStrList.Add('║   ║ |\  /|');
-    uctStrList.Add('╠═══╣ | \/ |');
-    uctStrList.Add('║   ║ |    |');
-    uctStrList.Add('╚═══╝ |    |');
+    uctStrList.Add(stringOfChar(' ', odsadenieLoga) + '╔═══╗');
+    uctStrList.Add(stringOfChar(' ', odsadenieLoga) + '║   ║ |\  /|');
+    uctStrList.Add(stringOfChar('_', odsadenieLoga) + '╠═══╣ | \/ |' +
+                   stringOfChar('_', odsadenieLoga));
+    uctStrList.Add(stringOfChar(' ', odsadenieLoga) + '║   ║ |    |');
+    uctStrList.Add(stringOfChar(' ', odsadenieLoga) + '╚═══╝ |    |');
     uctStrList.Add('Jesenskeho 4/A, 811 02  Bratislava 1');
     uctStrList.Add(stringOfChar('_',sepLine));
 
@@ -848,18 +929,21 @@ begin
         //intToStr(PKosik[iTovaru].cenaKusPredaj / 100) +' €'+)
         riadokUctu:= PKosik[iTovaru].nazov;
         //if (PKosik[iTovaru].cenaKusPredaj > 999)
-        dlzCisla:= dlzkaCisla(Trunc(PKosik[iTovaru].cenaKusPredaj));
-        if (dlzCisla < 5) then dlzCisla:= 5; //desatinne cisla typu 00.01
+        dlzCisla:= dlzkaCisla(Trunc(PKosik[iTovaru].cenaKusPredaj * 100));
+        inc(dlzCisla); //0.02 => bodka
+        if (dlzCisla < 4) then dlzCisla:= 4; //desatinne cisla typu 0.01
         riadokUctu:= riadokUctu + stringOfChar(' ',
-                     medzK1+medzK3-dlzCisla-length(PKosik[iTovaru].nazov)) +
+                     medzK1 + (medzE - dlzCisla) -
+                     length(PKosik[iTovaru].nazov)) +
                      currToStrF(PKosik[iTovaru].cenaKusPredaj, ffFixed, 2) +' €';
         dlzCisla:= dlzkaCisla(PKosik[iTovaru].mnozstvo);
         riadokUctu:= riadokUctu + stringOfChar(' ',medzK2-dlzCisla) +
                      intToStr(PKosik[iTovaru].mnozstvo);
         dlzCisla:= dlzkaCisla(Trunc(PKosik[iTovaru].cenaKusPredaj *
-                   PKosik[iTovaru].mnozstvo));
-        if (dlzCisla < 5) then dlzCisla:= 5; //desatinne cisla typu 0.01
-        riadokUctu:= riadokUctu + stringOfChar(' ',medzK3-dlzCisla) +
+                   PKosik[iTovaru].mnozstvo * 100));
+        inc(dlzCisla); //0.02 => bodka
+        if (dlzCisla < 4) then dlzCisla:= 4; //desatinne cisla typu 0.01
+        riadokUctu:= riadokUctu + stringOfChar(' ',medzE-dlzCisla) +
                      currToStrF(PKosik[iTovaru].cenaKusPredaj *
                      PKosik[iTovaru].mnozstvo, ffFixed, 2) +' €';
         uctStrList.Add(riadokUctu);

@@ -51,45 +51,45 @@ object Form1: TForm1
     )
   end
   object zobraz0Kat: TButton
-    Left = 24
+    Left = 96
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Ovocie'
     OnClick = zobraz0KatClick
     TabOrder = 1
   end
   object zobraz1Kat: TButton
-    Left = 104
+    Left = 176
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Zelenina'
     OnClick = zobraz1KatClick
     TabOrder = 2
   end
   object zobraz2Kat: TButton
-    Left = 184
+    Left = 256
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Pecivo'
     OnClick = zobraz2KatClick
     TabOrder = 3
   end
   object zobraz3Kat: TButton
-    Left = 264
+    Left = 336
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Ine'
     OnClick = zobraz3KatClick
     TabOrder = 4
   end
   object zobrazVsetko: TButton
-    Left = 344
+    Left = 416
     Height = 25
-    Top = 24
+    Top = 32
     Width = 75
     Caption = 'Vsetko'
     OnClick = zobrazVsetkoClick
@@ -233,6 +233,15 @@ object Form1: TForm1
     NumGlyphs = 1
     PasswordChar = #0
     TabOrder = 13
+  end
+  object zobrazTOP: TButton
+    Left = 16
+    Height = 25
+    Top = 32
+    Width = 75
+    Caption = 'TOP'
+    OnClick = zobrazTOPClick
+    TabOrder = 14
   end
   object Lista: TMainMenu
     left = 496
