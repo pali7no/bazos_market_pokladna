@@ -903,7 +903,7 @@ begin
 
     //vytvorenie uctenka_[id_transakcie].txt
     odsadenieLoga:= 16;
-    sepLine:= 43;
+    sepLine:= 44;
     medzK1:= 12;
     medzK2:= 6;
     medzE:= 11;

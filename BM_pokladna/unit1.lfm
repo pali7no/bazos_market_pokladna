@@ -106,7 +106,6 @@ object Form1: TForm1
     OnClick = vyhlPodlaKoduEditClick
     TabOrder = 6
     Text = 'vyhlPodlaKoduEdit'
-    TextHint = 'vyhlPodlaKodu'
   end
   object vyhlPodlaNazvuEdit: TEdit
     Left = 152
@@ -118,7 +117,6 @@ object Form1: TForm1
     OnClick = vyhlPodlaNazvuEditClick
     TabOrder = 7
     Text = 'vyhlPodlaNazvuEdit'
-    TextHint = 'vyhlPodlaNazvu'
   end
   object Kosik: TStringGrid
     Left = 512
