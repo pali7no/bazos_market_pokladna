@@ -141,7 +141,11 @@ begin
          Tovary[odpadInt].jeAktivny:= false;
          Tovary[odpadInt].povMnozstvo:= -1;
      end;
-     Kosik.RowCount:= 1; //nadpis
+
+     //nadpisy
+     Kosik.RowCount:= 1;
+     Ponuka.RowCount:= 1;
+
      //Ponuka.SelectedColor:= clBlue;
      Ponuka.Options:= Ponuka.Options + {[goDrawFocusSelected] +}
                       [goRelaxedRowSelect] + [goSmoothScroll] +
