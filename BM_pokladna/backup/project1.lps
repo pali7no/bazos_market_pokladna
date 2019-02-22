@@ -11,7 +11,7 @@
         <EditorIndex Value="6"/>
         <TopLine Value="3"/>
         <CursorPos X="15" Y="11"/>
-        <UsageCount Value="102"/>
+        <UsageCount Value="116"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -22,9 +22,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Unit1"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="731"/>
-        <CursorPos Y="747"/>
-        <UsageCount Value="102"/>
+        <TopLine Value="775"/>
+        <CursorPos X="31" Y="786"/>
+        <UsageCount Value="116"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -33,7 +33,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="2855"/>
         <CursorPos Y="2864"/>
-        <UsageCount Value="18"/>
+        <UsageCount Value="17"/>
       </Unit2>
       <Unit3>
         <Filename Value="C:\lazarus\lcl\grids.pas"/>
@@ -41,28 +41,28 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="9129"/>
         <CursorPos Y="9142"/>
-        <UsageCount Value="14"/>
+        <UsageCount Value="13"/>
       </Unit3>
       <Unit4>
         <Filename Value="C:\lazarus\lcl\include\customform.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="146"/>
         <CursorPos Y="161"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit4>
       <Unit5>
         <Filename Value="C:\lazarus\lcl\include\application.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2189"/>
         <CursorPos Y="2198"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="10"/>
       </Unit5>
       <Unit6>
         <Filename Value="H:\usr\share\lazarus\1.8.4\lcl\grids.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="9608"/>
         <CursorPos Y="9617"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="6"/>
       </Unit6>
       <Unit7>
         <Filename Value="unit1.lfm"/>
@@ -70,9 +70,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="5"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit7>
       <Unit8>
@@ -80,15 +79,15 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="179"/>
         <CursorPos X="23" Y="192"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
         <UnitName Value="Grids"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="9600"/>
+        <TopLine Value="9608"/>
         <CursorPos Y="9617"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
@@ -96,14 +95,14 @@
         <EditorIndex Value="3"/>
         <TopLine Value="601"/>
         <CursorPos Y="609"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\maskedit.pp"/>
         <UnitName Value="MaskEdit"/>
         <EditorIndex Value="2"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit11>
       <Unit12>
@@ -112,127 +111,131 @@
         <EditorIndex Value="1"/>
         <TopLine Value="98"/>
         <CursorPos Y="114"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="17"/>
         <Loaded Value="True"/>
       </Unit12>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="unit1.pas"/>
-        <Caret Line="152" Column="38" TopLine="141"/>
-      </Position1>
-      <Position2>
         <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
         <Caret Line="9617" TopLine="9608"/>
+      </Position1>
+      <Position2>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="757" TopLine="683"/>
       </Position2>
       <Position3>
         <Filename Value="unit1.pas"/>
-        <Caret Line="145" Column="34" TopLine="143"/>
+        <Caret Line="903" Column="63" TopLine="892"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="9617" TopLine="9380"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="19" Column="22" TopLine="10"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="10008" Column="14" TopLine="9993"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="89" Column="32" TopLine="75"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="10010" Column="21"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="142" Column="38" TopLine="128"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="5" Column="50"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="534" Column="45" TopLine="523"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="21" Column="39" TopLine="6"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="537" Column="31" TopLine="523"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="129" Column="67" TopLine="114"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="786" Column="31" TopLine="772"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="228" Column="40" TopLine="213"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="980" Column="35" TopLine="971"/>
       </Position10>
       <Position11>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="1608" Column="20" TopLine="1593"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="19" Column="68" TopLine="10"/>
       </Position11>
       <Position12>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="1610" Column="16" TopLine="1595"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="21" Column="32" TopLine="10"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="1612" Column="14" TopLine="1597"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="23" Column="25" TopLine="10"/>
       </Position13>
       <Position14>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="1615" Column="29" TopLine="1600"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="142" Column="38" TopLine="128"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="1627" Column="48" TopLine="1612"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="536" Column="42" TopLine="522"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="1637" Column="22" TopLine="1622"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="670" Column="48" TopLine="662"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="1639" Column="20" TopLine="1624"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="671" Column="44" TopLine="662"/>
       </Position17>
       <Position18>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="1717" Column="16" TopLine="1702"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="672" Column="65" TopLine="662"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="1719" Column="40" TopLine="1704"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="673" Column="65" TopLine="662"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="5048" Column="26" TopLine="5033"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="785" Column="41" TopLine="771"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="9068" Column="56" TopLine="9053"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="837" Column="37" TopLine="822"/>
       </Position21>
       <Position22>
         <Filename Value="unit1.pas"/>
-        <Caret Line="745" TopLine="695"/>
+        <Caret Line="899" Column="41" TopLine="894"/>
       </Position22>
       <Position23>
         <Filename Value="unit1.pas"/>
-        <Caret Line="157" Column="37" TopLine="144"/>
+        <Caret Line="900" Column="24" TopLine="894"/>
       </Position23>
       <Position24>
         <Filename Value="unit1.pas"/>
-        <Caret Line="930" Column="69" TopLine="920"/>
+        <Caret Line="903" Column="63" TopLine="894"/>
       </Position24>
       <Position25>
         <Filename Value="unit1.pas"/>
-        <Caret Line="914" Column="34" TopLine="903"/>
+        <Caret Line="906" Column="82" TopLine="894"/>
       </Position25>
       <Position26>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="9617" TopLine="9600"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="980" Column="35" TopLine="979"/>
       </Position26>
       <Position27>
         <Filename Value="unit1.pas"/>
-        <Caret Line="747" Column="8" TopLine="731"/>
+        <Caret Line="89" Column="32" TopLine="81"/>
       </Position27>
       <Position28>
-        <Filename Value="..\..\..\..\..\..\usr\lib\lazarus\1.8.2\lcl\grids.pas"/>
-        <Caret Line="9617" TopLine="9600"/>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="142" Column="38" TopLine="128"/>
       </Position28>
       <Position29>
         <Filename Value="unit1.pas"/>
-        <Caret Line="747" TopLine="731"/>
+        <Caret Line="537" Column="31" TopLine="523"/>
       </Position29>
+      <Position30>
+        <Filename Value="unit1.pas"/>
+        <Caret Line="670" Column="48" TopLine="656"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
   <Debugging>

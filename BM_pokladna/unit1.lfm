@@ -1,16 +1,16 @@
 object Form1: TForm1
-  Left = 306
+  Left = 311
   Height = 427
   Hint = 'vyhlPodlaKodu'
-  Top = 163
+  Top = 188
   Width = 1055
   Caption = 'Pokladna'
-  ClientHeight = 407
+  ClientHeight = 404
   ClientWidth = 1055
   Menu = Lista
   OnCreate = FormCreate
   ShowHint = True
-  LCLVersion = '1.4.0.4'
+  LCLVersion = '1.8.2.0'
   object Ponuka: TStringGrid
     Left = 16
     Height = 224
@@ -97,7 +97,7 @@ object Form1: TForm1
   end
   object vyhlPodlaKoduEdit: TEdit
     Left = 24
-    Height = 23
+    Height = 27
     Hint = 'vyhlPodlaKodu'
     Top = 0
     Width = 120
@@ -109,7 +109,7 @@ object Form1: TForm1
   end
   object vyhlPodlaNazvuEdit: TEdit
     Left = 152
-    Height = 23
+    Height = 27
     Hint = 'vyhlPodlaNazvu'
     Top = 0
     Width = 120
@@ -212,9 +212,9 @@ object Form1: TForm1
   end
   object celkCenaL: TLabel
     Left = 624
-    Height = 19
+    Height = 23
     Top = 296
-    Width = 206
+    Width = 231
     Caption = 'spolu cely nakup: 0,00 €'
     Font.Height = -19
     Font.Name = '@cour'
@@ -223,7 +223,7 @@ object Form1: TForm1
   end
   object EditButton1: TEditButton
     Left = 384
-    Height = 23
+    Height = 27
     Top = 0
     Width = 103
     ButtonWidth = 23

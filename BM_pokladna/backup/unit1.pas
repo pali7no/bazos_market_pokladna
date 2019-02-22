@@ -19,7 +19,7 @@ type
         //povMnozstvo - ak chcel viac ako mnozstvo, tak povMnozstvo:= mnozstvo,
         //aby keby vratil, tak sme zistili, ci mame pisat na sklad
         //default - povMnozstvo = -1 (nemusim si nic pamatat, lebo
-        //(ziadane mnostvo > Tovary[i].mnozstvo) = false)
+        //(ziadane mnostvo < Tovary[i].mnozstvo)
         kod, povMnozstvo, mnozstvo, iVPonuke, iVKosiku: integer; //iVPonuke = -1 => nie je v Ponuke
         cenaKusNakup, cenaKusPredaj, cenaSpolu: currency;
         jeAktivny: boolean;
@@ -141,16 +141,20 @@ begin
          Tovary[odpadInt].jeAktivny:= false;
          Tovary[odpadInt].povMnozstvo:= -1;
      end;
-     Kosik.RowCount:= 1; //nadpis
+
+     //nadpisy
+     Kosik.RowCount:= 1;
+     Ponuka.RowCount:= 1;
+
      //Ponuka.SelectedColor:= clBlue;
      Ponuka.Options:= Ponuka.Options + {[goDrawFocusSelected] +}
-                      [goRelaxedRowSelect] + [goSmoothScroll] +
+                      [goRelaxedRowSelect] {+ [goSmoothScroll]} +
                       [goHeaderHotTracking] + [goHeaderPushedLook] +
                       [goSelectionActive] + [goCellHints] + [goTruncCellHints] +
                       [goCellEllipsis] + [goRowHighlight] {+ [goEditing] +
                       [goRowSelect]};
      Kosik.Options:= Kosik.Options + {[goDrawFocusSelected] +}
-                      [goRelaxedRowSelect] + [goSmoothScroll] +
+                      [goRelaxedRowSelect] {+ [goSmoothScroll]} +
                       [goHeaderHotTracking] + [goHeaderPushedLook] +
                       [goSelectionActive] + [goCellHints] + [goTruncCellHints] +
                       [goCellEllipsis] + [goRowHighlight] {+ [goEditing] +
@@ -525,14 +529,15 @@ begin
              inc(iVTovary);
          end;
 
+         Tovary[iVTovary].mnozstvo:= Tovary[iVTovary].mnozstvo
+                                     + PKosik[iVPKosik].mnozstvo;
+
          //zapis do SKLAD.txt, ak si zobral viac ako tam bolo (=nasiel si)
          if (Tovary[iVTovary].povMnozstvo <> -1) then begin
              zapisViacSKLADtxt(iVTovary);
          end;
 
          Tovary[iVTovary].iVKosiku:= -1; //uz nie je v kosiku
-         Tovary[iVTovary].mnozstvo:= Tovary[iVTovary].mnozstvo
-                                  + PKosik[iVPKosik].mnozstvo;
          //zobraz rovno v Ponuka, ak tam je
          if (Tovary[iVTovary].iVPonuke <> -1) then begin
             Ponuka.Cells[3, Tovary[iVTovary].iVPonuke]:=
@@ -596,6 +601,7 @@ begin
            zobrazVsetkoClick(Ponuka);
         end;
         exit;
+        exit;
      end;
 
      //najdenie tovaru v Tovary[] a PKosik[]
@@ -633,10 +639,12 @@ begin
                  if not niecoZadal then begin
                     exit;
                     exit;
+                    exit;
                  end;
                  zadalInt:= tryStrToInt(inputRiadok, ziadaneMnozstvo);
                  if not zadalInt or (ziadaneMnozstvo < 1) then begin
                    showMessage('zadaj CISLO. PRIRODZENE CISLO. Vies, ako ma stves?!');
+                   exit;
                    exit;
                    exit;
                  end else begin
@@ -693,7 +701,9 @@ begin
              Memo1.Append(intToStr(PKosik[iVybratehoVPKosik].mnozstvo)
                  +' '+ CurrToStrF(PKosik[iVybratehoVPKosik].cenaSpolu, ffFixed, 2));
 
-             if novyTovar then Kosik.RowCount:= Kosik.RowCount + 1;
+             if novyTovar then begin
+                Kosik.RowCount:= Kosik.RowCount + 1;
+             end;
 
              //hard hard verzia (2 rovnake tovar => 1 riadok)
              //+1 lebo fixed riadok (nadpisy)
@@ -709,7 +719,7 @@ begin
              celkCenaL.Caption:= 'spolu cely nakup: ' +
                                  currToStrF(celkCena, ffFixed, 2) + ' €';
 
-             if (novyTovar = true) then begin
+             if (novyTovar = true) and (ziadaneMnozstvo > 0) then begin
                  inc(kupenychTovarov);
              end;
          end;
@@ -824,8 +834,8 @@ procedure TForm1.zaplatitClick(Sender: TObject);
 //prida kupeny tovar do STATISTIKY.txt, uberie zo SKLAD.txt, vytvori
 //uctenka_[id_transakcie].txt a zrusi Kosik
 var
-   riadkov, statRiadkov, mnozstvoSKLADtxt, iVTovary,
-     medzK1, medzK2, medzE, sepLine, dlzCisla, chcePlatit,
+   riadkov, statRiadkov, povMnozstvoSKLADtxt, iVTovary,
+     medzK1, medzK11, medzK2, medzE, sepLine, dlzCisla, chcePlatit,
      odsadenieLoga: integer;
    transID: qword;
    iPredaj, iTovaru: integer;
@@ -837,6 +847,7 @@ begin
     chcePlatit := messageDlg('Naozaj chcete zaplatit cely nakup?'
              ,mtCustom, mbOKCancel, 0);
     if (chcePlatit = mrCancel) then begin
+        exit;
         exit;
     end;
 
@@ -886,13 +897,13 @@ begin
             inc(iVTovary);
         end;
         if (Tovary[iVTovary].povMnozstvo = -1) then begin
-            mnozstvoSKLADtxt:= PKosik[iPredaj].mnozstvo +
-                               Tovary[iVTovary].mnozstvo;
+            povMnozstvoSKLADtxt:= Tovary[iVTovary].mnozstvo +
+                               PKosik[iPredaj].mnozstvo;
         end else begin
-            mnozstvoSKLADtxt:= Tovary[iVTovary].povMnozstvo;
+            povMnozstvoSKLADtxt:= Tovary[iVTovary].povMnozstvo;
         end;
 
-        skladOldRiadok:= intToStr(PKosik[iPredaj].kod) +';'+ intToStr(mnozstvoSKLADtxt);
+        skladOldRiadok:= intToStr(PKosik[iPredaj].kod) +';'+ intToStr(povMnozstvoSKLADtxt);
         skladNewRiadok:= intToStr(PKosik[iPredaj].kod) +';'+
                     intToStr(Tovary[iVTovary].mnozstvo);
         skladStrList.Text := StringReplace(skladStrList.Text,
@@ -904,7 +915,8 @@ begin
     //vytvorenie uctenka_[id_transakcie].txt
     odsadenieLoga:= 16;
     sepLine:= 44;
-    medzK1:= 12;
+    medzK1:= 36;
+    medzK11:= 12;
     medzK2:= 6;
     medzE:= 11;
 
@@ -918,14 +930,14 @@ begin
     uctStrList.Add('Jesenskeho 4/A, 811 02  Bratislava 1');
     uctStrList.Add(stringOfChar('_',sepLine));
 
-    uctStrList.Add('Datum: ' +stringOfChar(' ',medzK1 - 7)+ dateToStr(now));
+    uctStrList.Add('Datum: ' +stringOfChar(' ',medzK1 - 7 + 1)+ dateToStr(now));
     uctStrList.Add('Cas: ' +stringOfChar(' ', medzK1 - 5)+ timeToStr(now));
     uctStrList.Add('Cislo uctenky: ' +stringOfChar(' ', medzK1 - 15)+
                           intToStr(transID));
     uctStrList.Add(stringOfChar('_',sepLine));
 
     for iTovaru:=0 to kupenychTovarov-1 do begin
-        //uctStrList.Add(PKosik[iTovaru].nazov +stringOfChar(' ',medzK1)+
+        //uctStrList.Add(PKosik[iTovaru].nazov +stringOfChar(' ',medzK11)+
         //intToStr(PKosik[iTovaru].cenaKusPredaj / 100) +' €'+)
         riadokUctu:= PKosik[iTovaru].nazov;
         //if (PKosik[iTovaru].cenaKusPredaj > 999)
@@ -933,7 +945,7 @@ begin
         inc(dlzCisla); //0.02 => bodka
         if (dlzCisla < 4) then dlzCisla:= 4; //desatinne cisla typu 0.01
         riadokUctu:= riadokUctu + stringOfChar(' ',
-                     medzK1 + (medzE - dlzCisla) -
+                     medzK11 + (medzE - dlzCisla) -
                      length(PKosik[iTovaru].nazov)) +
                      currToStrF(PKosik[iTovaru].cenaKusPredaj, ffFixed, 2) +' €';
         dlzCisla:= dlzkaCisla(PKosik[iTovaru].mnozstvo);
