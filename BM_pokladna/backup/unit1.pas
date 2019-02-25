@@ -25,11 +25,17 @@ type
         jeAktivny: boolean;
         nazov: string;
   end;
+  suborTyp = record
+        trebaUpravit: boolean;
+        verzia: integer;
+        menoSuboru: string;
+  end;
 
 
   { TForm1 }
 
   TForm1 = class(TForm)
+    nacitanieSuborov: TTimer;
     zobrazTOP: TButton;
     celkCenaL: TLabel;
     EditButton1: TEditButton;
@@ -54,6 +60,7 @@ type
     Kosik: TStringGrid;
     function jeSlovo(inputString: string): boolean;
     procedure menoPokladnikaClick(Sender: TObject);
+    procedure nacitanieSuborovTimer(Sender: TObject);
     procedure odhlasPokladnikaClick(Sender: TObject);
     procedure simpleReloadClick(Sender: TObject);
     procedure zobrazTOPClick(Sender: TObject);
@@ -88,6 +95,8 @@ type
     procedure vyhlPodlaNazvu(userInput: string; Sender: TObject);
     procedure zapisViacSKLADtxt(iVTovary: integer);
     function dlzkaCisla(cislo: integer): integer;
+    //lockovanie
+    function verziaSuboru(subor: string): integer;
   private
 
   public
@@ -97,6 +106,12 @@ type
 var
   Form1: TForm1;
   Tovary, PKosik: array [0..99] of tovarTyp;
+  Subory: array [1..5] of suborTyp;
+  //1 - SKLAD.txt
+  //2 - TOVAR.txt
+  //3 - CENNIK.txt
+  //4 - STATISTIKY.txt
+  //5 - TOP.txt
   prazdnyTovar: tovarTyp;
   sklad, tovar, cennik, statistiky: textFile;
   tovarov, kupenychTovarov: integer;
@@ -112,7 +127,7 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-    odpadInt, iTovaru, iZnaku: integer;
+    i, iTovaru, iZnaku: integer;
     odpadChar: char;
     odpadString, kodString, nazovString, kodNazovString: string;
     zadalMeno: boolean;
@@ -135,11 +150,26 @@ begin
     randomize;
     kupenychTovarov:= 0;
      //iVPonuke = -1 => nie je v Ponuke
-     for odpadInt:=0 to 99 do begin
-         Tovary[odpadInt].iVPonuke:= -1;
-         Tovary[odpadInt].iVKosiku:= -1;
-         Tovary[odpadInt].jeAktivny:= false;
-         Tovary[odpadInt].povMnozstvo:= -1;
+     for i:=0 to 99 do begin
+         Tovary[i].iVPonuke:= -1;
+         Tovary[i].iVKosiku:= -1;
+         Tovary[i].jeAktivny:= false;
+         Tovary[i].povMnozstvo:= -1;
+     end;
+     //1 - SKLAD.txt
+     //2 - TOVAR.txt
+     //3 - CENNIK.txt
+     //4 - STATISTIKY.txt
+     //5 - TOP.txt
+     Subory[1].menoSuboru:= 'SKLAD';
+     Subory[2].menoSuboru:= 'TOVAR';
+     Subory[3].menoSuboru:= 'CENNIK';
+     Subory[4].menoSuboru:= 'STATISTIKY';
+     Subory[5].menoSuboru:= 'TOP';
+     for i:=1 to 5 do begin
+         Subory[i].trebaUpravit:= false;
+         Subory[i].verzia:= verziaSuboru(Subory[i].menoSuboru);
+         Memo1.Append(Subory[i].menoSuboru + ': ' + intToStr(Subory[i].verzia));
      end;
 
      //nadpisy
@@ -213,14 +243,14 @@ begin
      readLn(tovar, odpadInt);
      readLn(cennik, odpadInt);
 
-     Ponuka.RowCount:= tovarov + 1; //+nadpis
+     //Ponuka.RowCount:= tovarov + 1; //+nadpis
 
       //Memo1.Append(intToStr(odpadInt));
      for iTovaru:=0 to tovarov-1 do begin
+         nacitaniePolozkyCENNIKtxt(iTovaru);
          NacitaniePolozkyTOVARtxt(iTovaru);
          //NacitaniePolozkySKLADtxt(iTovaru);
-         nacitaniePolozkyCENNIKtxt(iTovaru);
-         Tovary[iTovaru].iVPonuke:= iTovaru+1; //0. riadok - hlavicka tabulky
+         //Tovary[iTovaru].iVPonuke:= iTovaru+1; //0. riadok - hlavicka tabulky
      end;
 
      NacitaniePoloziekSKLADtxtStrList;
@@ -228,6 +258,62 @@ begin
      closeFile(sklad);
      closeFile(tovar);
      closeFile(cennik);
+end;
+
+procedure TForm1.NacitaniePolozkyCENNIKtxt(iTovaru: integer);
+var
+   cennikRiadok, kodString, cenaKusNakupString, cenaKusPredajString: string;
+   iZnaku, iRiadku, preskokCennik2: integer;
+begin
+    iRiadku:= iTovaru + 1;
+    readLn(cennik, cennikRiadok);
+
+    //ak tovar nema cenu, tak je neaktivny (nezvysujem pocRiadkov)
+    if (length(cennikRiadok) = 3) then begin
+        Tovary[iTovaru].jeAktivny:= false;
+        Tovary[iTovaru].iVPonuke:= -1;
+        Tovary[iTovaru].kod:= strToInt(cennikRiadok);
+        //Ponuka.Cells[0, iRiadku]:= Ponuka.Cells[0,iRiadku] + '*';
+        //Ponuka.Cells[2, iRiadku]:= '';
+    end else begin
+    //tovar ma cenu a treba ju nacitat a zobrazit v Ponuke (zvysujem pocRiadkov)
+        Form1.Ponuka.RowCount:= Form1.Ponuka.RowCount + 1;
+        Tovary[iTovaru].jeAktivny:= true;
+        Tovary[iTovaru].iVPonuke:= Form1.Ponuka.RowCount - 1;
+        kodString:= '999';
+        cenaKusNakupString:= '99999999999999';
+        cenaKusPredajString:= '99999999999999';
+        iZnaku:= 1;
+        while(cennikRiadok[iZnaku] <> ';') do begin
+            kodString[iZnaku]:= cennikRiadok[iZnaku];
+            inc(iZnaku);
+        end;
+
+        inc(iZnaku); //skipujeme ;
+        while(cennikRiadok[iZnaku] <> ';') do begin
+            cenaKusNakupString[iZnaku-preskokKod]:= cennikRiadok[iZnaku];
+            inc(iZnaku);
+        end;
+        delete(cenaKusNakupString, iZnaku-preskokKod+1,
+               length(cenaKusNakupString) - (iZnaku-preskokKod));
+
+        preskokCennik2:= iZnaku; //sme na ;
+        inc(iZnaku); //skipujeme ;
+        for iZnaku:=iZnaku to length(cennikRiadok) do begin
+            cenaKusPredajString[iZnaku-preskokCennik2]:= cennikRiadok[iZnaku];
+        end;
+        delete(cenaKusPredajString, iZnaku-preskokCennik2+1,
+               length(cenaKusPredajString) - (iZnaku-preskokCennik2));
+
+        Tovary[iTovaru].kod:= strToInt({copy(cennikRiadok, 1, iZnaku-1)}kodString);
+        Tovary[iTovaru].cenaKusNakup:= strToCurr(cenaKusNakupString) / 100{{$IFDEF UNIX} / 100 {$ENDIF}};
+        Tovary[iTovaru].cenaKusPredaj:= strToCurr(cenaKusPredajString) / 100{{$IFDEF UNIX} / 100 {$ENDIF}};
+
+        Form1.Ponuka.Cells[1, Tovary[iTovaru].iVPonuke]:= intToStr(Tovary[iTovaru].kod);
+        Form1.Ponuka.Cells[2, Tovary[iTovaru].iVPonuke]:= {floatToStr(Tovary[iTovaru].cenaKusPredaj);}
+        CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
+        //Form1.Ponuka.Cells[0, Tovary[iTovaru].iVPonuke]
+    end;
 end;
 
 procedure TForm1.NacitaniePolozkyTOVARtxt(iTovaru: integer);
@@ -251,10 +337,15 @@ begin
     delete(nazovString, iZnaku-preskokKod+1, length(nazovString) - (iZnaku-preskokKod));
     Form1.Memo1.Append(kodString +' '+ nazovString); //test
 
-    Tovary[iTovaru].kod:= strToInt(kodString);
-    Form1.Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
+    //kod zapisany z cenniku
+    //Tovary[iTovaru].kod:= strToInt(kodString);
     Tovary[iTovaru].nazov:= nazovString;
-    Form1.Ponuka.Cells[0, iRiadku]:= Tovary[iTovaru].nazov;
+
+    //vypisujeme iba aktivne tovary
+    if (Tovary[iTovaru].jeAktivny = true) then begin
+        //Form1.Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
+        Form1.Ponuka.Cells[0, Tovary[iTovaru].iVPonuke]:= Tovary[iTovaru].nazov;
+    end;
 end;
 
 procedure TForm1.nacitaniePoloziekSKLADtxtStrList;
@@ -297,11 +388,14 @@ begin
         //Form1.Memo1.Append(kodString +' '+ mnozstvoString);
 
         Tovary[iTovaru].mnozstvo:= strToInt(mnozstvoString);
-        Form1.Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
+        if (Tovary[iTovaru].jeAktivny = true) then begin
+            Form1.Ponuka.Cells[3, Tovary[iTovaru].iVPonuke]:= intToStr(Tovary[iTovaru].mnozstvo);
+        end;
     end;
 end;
 
 procedure TForm1.NacitaniePolozkySKLADtxt(iTovaru: integer);
+//neaktualizovane na nezobrazovanie cien
 var
    skladRiadok, kodString, mnozstvoString: string;
    iZnaku, iRiadku: integer;
@@ -328,56 +422,6 @@ begin
     Form1.Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
 end;
 
-procedure TForm1.NacitaniePolozkyCENNIKtxt(iTovaru: integer);
-var
-   cennikRiadok, kodString, cenaKusNakupString, cenaKusPredajString: string;
-   iZnaku, iRiadku, preskokCennik2: integer;
-begin
-    iRiadku:= iTovaru + 1;
-    readLn(cennik, cennikRiadok);
-
-    //ak tovar nema cenu, tak je neaktivny
-    if (length(cennikRiadok) = 3) then begin
-        Tovary[iTovaru].jeAktivny:= false;
-        //kod uz priradeny z TOVAR.txt
-        Ponuka.Cells[0, iRiadku]:= Ponuka.Cells[0,iRiadku] + '*';
-        Ponuka.Cells[2, iRiadku]:= '';
-
-    end else begin
-    //tovar ma cenu a treba ju nacitat
-        Tovary[iTovaru].jeAktivny:= true;
-        kodString:= '999';
-        cenaKusNakupString:= '99999999999999';
-        cenaKusPredajString:= '99999999999999';
-        iZnaku:= 1;
-        while(cennikRiadok[iZnaku] <> ';') do begin
-            kodString[iZnaku]:= cennikRiadok[iZnaku];
-            inc(iZnaku);
-        end;
-
-        inc(iZnaku); //skipujeme ;
-        while(cennikRiadok[iZnaku] <> ';') do begin
-            cenaKusNakupString[iZnaku-preskokKod]:= cennikRiadok[iZnaku];
-            inc(iZnaku);
-        end;
-        delete(cenaKusNakupString, iZnaku-preskokKod+1,
-               length(cenaKusNakupString) - (iZnaku-preskokKod));
-
-        preskokCennik2:= iZnaku; //sme na ;
-        inc(iZnaku); //skipujeme ;
-        for iZnaku:=iZnaku to length(cennikRiadok) do begin
-            cenaKusPredajString[iZnaku-preskokCennik2]:= cennikRiadok[iZnaku];
-        end;
-        delete(cenaKusPredajString, iZnaku-preskokCennik2+1,
-               length(cenaKusPredajString) - (iZnaku-preskokCennik2));
-
-        Tovary[iTovaru].cenaKusNakup:= strToCurr(cenaKusNakupString) / 100{{$IFDEF UNIX} / 100 {$ENDIF}};
-        Tovary[iTovaru].cenaKusPredaj:= strToCurr(cenaKusPredajString) / 100{{$IFDEF UNIX} / 100 {$ENDIF}};
-        Form1.Ponuka.Cells[2, iRiadku]:= {floatToStr(Tovary[iTovaru].cenaKusPredaj);}
-        CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
-    end;
-end;
-
 procedure TForm1.VycistitPonuku;
 var
    iStlpca, iRiadku, iTovaru: integer;
@@ -400,13 +444,14 @@ begin
     Ponuka.RowCount:= 1;
     iRiadku:= 1;
     for iTovaru:=0 to tovarov-1 do begin
-        if (Tovary[iTovaru].kod div 100 = druh) then begin
+        if (Tovary[iTovaru].kod div 100 = druh) and
+                (Tovary[iTovaru].jeAktivny = true) then begin
            Ponuka.RowCount:= Ponuka.RowCount + 1;
            Ponuka.Cells[0, iRiadku]:= Tovary[iTovaru].nazov;
-           if (Tovary[iTovaru].jeAktivny = false) then begin
-              Ponuka.Cells[0, iRiadku]:= Ponuka.Cells[0, iRiadku] + '*';
-              Ponuka.Cells[2, iRiadku]:= '';
-           end;
+           //if (Tovary[iTovaru].jeAktivny = false) then begin
+           //   Ponuka.Cells[0, iRiadku]:= Ponuka.Cells[0, iRiadku] + '*';
+           //   Ponuka.Cells[2, iRiadku]:= '';
+           //end;
            Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
            Ponuka.Cells[2, iRiadku]:= CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
            Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
@@ -445,19 +490,23 @@ var
    iTovaru, iRiadku: integer;
 begin
     //VycistitPonuku;
-    Ponuka.RowCount:= tovarov + 1;
+    Ponuka.RowCount:= 1;
     iRiadku:= -1;
     for iTovaru:=0 to tovarov-1 do begin
         iRiadku:= iTovaru + 1;
-        Ponuka.Cells[0, iRiadku]:= Tovary[iTovaru].nazov;
-        if (Tovary[iTovaru].jeAktivny = false) then begin
-           Ponuka.Cells[0, iRiadku]:= Ponuka.Cells[0, iRiadku] + '*';
-           Ponuka.Cells[2, iRiadku]:= '';
+        if (Tovary[iTovaru].jeAktivny = true) then begin
+            Ponuka.RowCount:= Ponuka.RowCount + 1;
+            Tovary[iTovaru].iVPonuke:= Ponuka.RowCount - 1;
+            Ponuka.Cells[0, Tovary[iTovaru].iVPonuke]:= Tovary[iTovaru].nazov;
+            Ponuka.Cells[1, Tovary[iTovaru].iVPonuke]:=
+                            intToStr(Tovary[iTovaru].kod);
+            Ponuka.Cells[2, Tovary[iTovaru].iVPonuke]:=
+                            CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
+            Ponuka.Cells[3, Tovary[iTovaru].iVPonuke]:=
+                            intToStr(Tovary[iTovaru].mnozstvo);
         end;
-        Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
-        Ponuka.Cells[2, iRiadku]:= CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
-        Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
-        Tovary[iTovaru].iVPonuke:= iRiadku;
+        //Ponuka.Cells[0, iRiadku]:= Ponuka.Cells[0, iRiadku] + '*';
+        //Ponuka.Cells[2, iRiadku]:= '';
     end;
 end;
 
@@ -633,8 +682,8 @@ begin
              zadalInt:= false;
              while niecoZadal and not zadalInt do begin
                  inputRiadok:= '1';
-                 niecoZadal:= inputQuery(PKosik[iVybratehoVPKosik].nazov,
-                          'Zadajte mnozstvo: '+PKosik[iVybratehoVPKosik].nazov,
+                 niecoZadal:= inputQuery(Tovary[iVybratehoVTovary].nazov,
+                          'Zadajte mnozstvo: '+Tovary[iVybratehoVTovary].nazov,
                           inputRiadok);
                  if not niecoZadal then begin
                     exit;
@@ -705,7 +754,7 @@ begin
                 Kosik.RowCount:= Kosik.RowCount + 1;
              end;
 
-             //hard hard verzia (2 rovnake tovar => 1 riadok)
+             //hard hard verziaSuboru (2 rovnake tovar => 1 riadok)
              //+1 lebo fixed riadok (nadpisy)
              Kosik.Cells[0, iVybratehoVPKosik+1]:= PKosik[iVybratehoVPKosik].nazov;
              Kosik.Cells[1, iVybratehoVPKosik+1]:=
@@ -972,7 +1021,8 @@ begin
     //zrusenie nakupu
     nacitanieCelejDatabazy;
     for iPredaj:=0 to kupenychTovarov-1 do begin
-        PKosik[iPredaj].mnozstvo:= -PKosik[iPredaj].mnozstvo;
+        PKosik[iPredaj].mnozstvo:= 0;
+        PKosik[iPredaj].povMnozstvo:= -1;
     end;
     zrusitNakup;
 end;
@@ -1062,6 +1112,7 @@ begin
                               'Zadajte take kladne, cele cislo a, ' +
                               'pre ktore plati: ' + #13#10 + '0,2 < a/500 < 0,998)');
          vyhlPodlaKoduEdit.Clear;
+         zobrazVsetkoClick(vyhlPodlaKoduEdit);
          //umysel je dat kurzor prec, ale to sa nedari
          //vyhlPodlaKoduEdit.Invalidate;
          //Memo1.SelLength:= 0;
@@ -1181,6 +1232,58 @@ begin
          pokladnik:= noveMeno;
          menoPokladnika.Caption:= 'Meno pokladnika: ' + pokladnik;
      end;
+end;
+
+procedure TForm1.nacitanieSuborovTimer(Sender: TObject);
+//++ / -- tovar IBA podla SKLAD.txt
+var
+   lock: textFile;
+   tovarStrList: TStringList;
+   iTovaru, tovarAktVerzia: integer;
+   rTovary: string;
+begin
+     //nacitanie TOVAR.txt
+     tovarAktVerzia:= verziaSuboru('TOVAR');
+     if (not (fileExists('TOVAR_LOCK.txt'))) and
+             (Subory[2].verzia <> tovarAktVerzia) then begin
+         //createFile(Subory[2].menoSuboru + '_LOCK.txt');
+         assignFile(lock, ('TOVAR_LOCK.txt'));
+         rewrite(lock);
+         tovarStrList:= TStringList.Create;
+         tovarStrList.LoadFromFile('TOVAR.txt');
+         tovarov:= strToInt(tovarStrList[0]);
+         //nemoze sa mi stat, ze mam iny pocet tovarov
+         for iTovaru:=0 to tovarov-1 do begin
+             rTovary:= tovarStrList[iTovaru+1];
+             Tovary[iTovaru].kod:= strToInt(copy(rTovary, 1, 3));
+             delete(rTovary, 1, 4);
+             Tovary[iTovaru].nazov:= rTovary;
+             if (Tovary[iTovaru].iVPonuke <> -1) then begin
+                 Ponuka.Cells[0, Tovary[iTovaru].iVPonuke]:=
+                                 Tovary[iTovaru].nazov;
+                 Ponuka.Cells[1, Tovary[iTovaru].iVPonuke]:=
+                                 intToStr(Tovary[iTovaru].kod);
+             end;
+             if (Tovary[iTovaru].iVKosiku <> -1) then begin
+                 Kosik.Cells[0, Tovary[iTovaru].iVKosiku]:=
+                                 Tovary[iTovaru].nazov;
+                 Kosik.Cells[1, Tovary[iTovaru].iVKosiku]:=
+                                intToStr(Tovary[iTovaru].kod);
+             end;
+         end;
+         Subory[2].verzia:= tovarAktVerzia;
+         deleteFile('TOVAR_LOCK.txt');
+     end;
+end;
+
+function TForm1.verziaSuboru(subor: string): integer;
+//vrati verziu suboru
+var
+   suborStrList: TStringList;
+begin
+     suborStrList:= TStringList.Create;
+     suborStrList.LoadFromFile(subor + '_VERZIA.txt');
+     exit(strToInt(suborStrList[0]));
 end;
 
 procedure TForm1.odhlasPokladnikaClick(Sender: TObject);

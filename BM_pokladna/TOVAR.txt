@@ -1,11 +1,12 @@
-10
-100;jablko
+11
+100;jablcko
 101;maly problem
 200;paprika
 201;blb ost
 400;lyze
-401;bahno
+401;bahienko
 402;kravina
 403;hovadina
 404;auto
 410;mor ho
+414;krivanik!!!

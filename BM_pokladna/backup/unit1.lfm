@@ -171,12 +171,14 @@ object Form1: TForm1
     )
   end
   object zrusNakup: TButton
-    Left = 808
-    Height = 25
-    Top = 24
-    Width = 75
-    Caption = 'zrusNakup'
+    Left = 728
+    Height = 49
+    Top = 8
+    Width = 163
+    Caption = 'Zrus Nakup'
+    Font.Height = -27
     OnClick = zrusNakupClick
+    ParentFont = False
     TabOrder = 9
   end
   object zaplatit: TButton
@@ -202,11 +204,13 @@ object Form1: TForm1
     TabOrder = 11
   end
   object menoPokladnika: TPanel
-    Left = 584
+    Left = 512
     Height = 50
     Top = 8
-    Width = 170
+    Width = 202
     Caption = 'menoPokladnika'
+    Font.Height = -15
+    ParentFont = False
     TabOrder = 12
     OnClick = menoPokladnikaClick
   end
@@ -263,5 +267,12 @@ object Form1: TForm1
       Caption = 'koniec'
       OnClick = koniecClick
     end
+  end
+  object nacitanieSuborov: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = nacitanieSuborovTimer
+    left = 16
+    top = 304
   end
 end
