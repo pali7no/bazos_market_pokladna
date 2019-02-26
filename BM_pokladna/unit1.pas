@@ -171,6 +171,7 @@ begin
          Subory[i].verzia:= verziaSuboru(Subory[i].menoSuboru);
          Memo1.Append(Subory[i].menoSuboru + ': ' + intToStr(Subory[i].verzia));
      end;
+     nacitanieSuborov.Enabled:= false;
 
      //nadpisy
      Kosik.RowCount:= 1;
@@ -258,6 +259,7 @@ begin
      closeFile(sklad);
      closeFile(tovar);
      closeFile(cennik);
+     nacitanieSuborov.Enabled:= true;
 end;
 
 procedure TForm1.NacitaniePolozkyCENNIKtxt(iTovaru: integer);
@@ -353,15 +355,15 @@ var
    skladStrList: TStringList;
    iTovaru: integer;
    skladRiadok, kodString, mnozstvoString: string;
-   iZnaku, iRiadku, bcPos: integer;
+   iZnaku, iRiadku, bcPoz: integer;
 begin
     skladStrList:= TStringList.Create;
     skladStrList.LoadFromFile('SKLAD.txt');
     //for iTovaru:=0 to tovarov do begin
     //    skladRiadok:= skladStrList[iTovaru];
     //    Memo1.Append(skladRiadok);
-    //    bcPos:= pos(';',skladRiadok);
-    //    Memo1.Append(intToStr(bcPos));
+    //    bcPoz:= pos(';',skladRiadok);
+    //    Memo1.Append(intToStr(bcPoz));
     //end;
 
     skladRiadok:= '1';
@@ -377,8 +379,8 @@ begin
         //    kodString[iZnaku]:= skladRiadok[iZnaku];
         //    inc(iZnaku);
         //end;
-        bcPos:= pos(';',skladRiadok);
-        iZnaku:= bcPos;
+        bcPoz:= pos(';',skladRiadok);
+        iZnaku:= bcPoz;
         Memo1.Append(intToStr(iZnaku));
 
         for iZnaku:=preskokKod+1 to length(skladRiadok) do begin
@@ -1238,13 +1240,73 @@ begin
 end;
 
 procedure TForm1.nacitanieSuborovTimer(Sender: TObject);
-//++ / -- tovar IBA podla SKLAD.txt
+//++ al. -- tovar IBA podla SKLAD.txt
 var
    lock: textFile;
-   tovarStrList: TStringList;
-   iTovaru, tovarAktVerzia: integer;
-   rTovary: string;
+   tovarStrList, cennikStrList: TStringList;
+   iTovaru, tovarAktVerzia, cennikAktVerzia, iRiadku, bcPoz: integer;
+   rTovar, rCennik: string;
 begin
+   //nacitanie CENNIK.txt
+   tovarAktVerzia:= verziaSuboru('cennik');
+   if (not (fileExists('CENNIK_LOCK.txt'))) and
+           (Subory[3].verzia <> cennikAktVerzia) and
+           //upravujeme iba pri prazdnom cenniku
+           (kupenychTovarov = 0) then begin
+       //createFile(Subory[2].menoSuboru + '_LOCK.txt');
+       assignFile(lock, ('CENNIK_LOCK.txt'));
+       rewrite(lock);
+       closeFile(lock);
+       cennikStrList:= TStringList.Create;
+       cennikStrList.LoadFromFile('CENNIK.txt');
+       tovarov:= strToInt(cennikStrList[0]);
+       //nemoze sa mi stat, ze mam iny pocet cennikov
+       for iTovaru:=0 to tovarov-1 do begin
+           iRiadku:= iTovaru + 1;
+           rCennik:= cennikStrList[iRiadku];
+
+           //neaktivny tovar (v cenniku iba kod)
+           if (length(rCennik) = 3) then begin
+               Tovary[iTovaru].jeAktivny:= false;
+               Tovary[iTovaru].kod:= strToInt(rCennik);
+
+               if (Tovary[iTovaru].iVPonuke <> -1) then begin
+
+               end;
+           end;
+           //kod
+           bcPoz:= pos(';', rCennik)
+           Tovary[iTovaru].kod:= strToInt(copy(rCennik, 1, bcPoz - 1));
+           delete(rCennik, 1, bcPoz);
+
+           //cenaKusNakup (nepotrebna :) )
+           bcPoz:= pos(';',rCennik);
+           Tovary[iTovaru].cenaKusNakup:= strToCurr(copy(rCennik, 1, bcPoz - 1)) /100;
+           delete(rCennik, 1, bcPoz);
+
+           //cenaKusPredaj
+           Tovary[iTovaru].cenaKusPredaj:= strToCurr(rCennik) / 100;
+
+           Tovary[iTovaru].nazov:= rCennik;
+           if (Tovary[iTovaru].iVPonuke <> -1) then begin
+               Ponuka.Cells[1, cenniky[iTovaru].iVPonuke]:=
+                               intToStr(cenniky[iTovaru].kod);
+               Ponuka.Cells[2, cenniky[iTovaru].iVPonuke]:=
+                               cenniky[iTovaru].nazov;
+           end;
+           if (Tovary[icenniku].iVKosiku <> -1) then begin
+               Kosik.Cells[0, cenniky[icenniku].iVKosiku]:=
+                               cenniky[icenniku].nazov;
+               Kosik.Cells[1, cenniky[icenniku].iVKosiku]:=
+                              intToStr(cenniky[icenniku].kod);
+           end;
+       end;
+       Subory[2].verzia:= cennikAktVerzia;
+       deleteFile('cennik_LOCK.txt');
+   end;
+
+
+
      //nacitanie TOVAR.txt
      tovarAktVerzia:= verziaSuboru('TOVAR');
      if (not (fileExists('TOVAR_LOCK.txt'))) and
@@ -1254,13 +1316,13 @@ begin
          rewrite(lock);
          tovarStrList:= TStringList.Create;
          tovarStrList.LoadFromFile('TOVAR.txt');
-         tovarov:= strToInt(tovarStrList[0]);
+         //tovarov:= strToInt(tovarStrList[0]);
          //nemoze sa mi stat, ze mam iny pocet tovarov
          for iTovaru:=0 to tovarov-1 do begin
-             rTovary:= tovarStrList[iTovaru+1];
-             Tovary[iTovaru].kod:= strToInt(copy(rTovary, 1, 3));
-             delete(rTovary, 1, 4);
-             Tovary[iTovaru].nazov:= rTovary;
+             rTovar:= tovarStrList[iTovaru+1];
+             Tovary[iTovaru].kod:= strToInt(copy(rTovar, 1, 3));
+             delete(rTovar, 1, 4);
+             Tovary[iTovaru].nazov:= rTovar;
              if (Tovary[iTovaru].iVPonuke <> -1) then begin
                  Ponuka.Cells[0, Tovary[iTovaru].iVPonuke]:=
                                  Tovary[iTovaru].nazov;

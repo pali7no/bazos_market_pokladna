@@ -1,6 +1,6 @@
 11
-100;jablcko
-101;maly problem
+100;jablkos
+101;maly problemis
 200;paprika
 201;blb ost
 400;lyze

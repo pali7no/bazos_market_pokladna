@@ -171,6 +171,7 @@ begin
          Subory[i].verzia:= verziaSuboru(Subory[i].menoSuboru);
          Memo1.Append(Subory[i].menoSuboru + ': ' + intToStr(Subory[i].verzia));
      end;
+     nacitanieSuborov.Enabled:= false;
 
      //nadpisy
      Kosik.RowCount:= 1;
@@ -258,6 +259,7 @@ begin
      closeFile(sklad);
      closeFile(tovar);
      closeFile(cennik);
+     nacitanieSuborov.Enabled:= true;
 end;
 
 procedure TForm1.NacitaniePolozkyCENNIKtxt(iTovaru: integer);
@@ -447,15 +449,18 @@ begin
         if (Tovary[iTovaru].kod div 100 = druh) and
                 (Tovary[iTovaru].jeAktivny = true) then begin
            Ponuka.RowCount:= Ponuka.RowCount + 1;
-           Ponuka.Cells[0, iRiadku]:= Tovary[iTovaru].nazov;
+           Tovary[iTovaru].iVPonuke:= iRiadku;
+           Ponuka.Cells[0, Tovary[iTovaru].iVPonuke]:= Tovary[iTovaru].nazov;
            //if (Tovary[iTovaru].jeAktivny = false) then begin
            //   Ponuka.Cells[0, iRiadku]:= Ponuka.Cells[0, iRiadku] + '*';
            //   Ponuka.Cells[2, iRiadku]:= '';
            //end;
-           Ponuka.Cells[1, iRiadku]:= intToStr(Tovary[iTovaru].kod);
-           Ponuka.Cells[2, iRiadku]:= CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
-           Ponuka.Cells[3, iRiadku]:= intToStr(Tovary[iTovaru].mnozstvo);
-           Tovary[iTovaru].iVPonuke:= iRiadku;
+           Ponuka.Cells[1, Tovary[iTovaru].iVPonuke]:=
+                           intToStr(Tovary[iTovaru].kod);
+           Ponuka.Cells[2, Tovary[iTovaru].iVPonuke]:=
+                           CurrToStrF(Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
+           Ponuka.Cells[3, Tovary[iTovaru].iVPonuke]:=
+                           intToStr(Tovary[iTovaru].mnozstvo);
            inc(iRiadku);
         end;
     end;
