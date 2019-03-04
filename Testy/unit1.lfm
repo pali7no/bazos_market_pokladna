@@ -7,7 +7,7 @@ object Form1: TForm1
   ClientHeight = 240
   ClientWidth = 320
   OnCreate = FormCreate
-  LCLVersion = '1.4.0.4'
+  LCLVersion = '1.8.2.0'
   object forceInput: TButton
     Left = 16
     Height = 25
@@ -34,5 +34,14 @@ object Form1: TForm1
     Caption = 'desatMiesta'
     OnClick = desatMiestaClick
     TabOrder = 2
+  end
+  object stringCase: TButton
+    Left = 16
+    Height = 25
+    Top = 136
+    Width = 104
+    Caption = 'stringCase'
+    OnClick = stringCaseClick
+    TabOrder = 3
   end
 end

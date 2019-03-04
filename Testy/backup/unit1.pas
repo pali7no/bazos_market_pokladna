@@ -12,8 +12,10 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    desatMiesta: TButton;
     zadavanieTovaru: TButton;
     forceInput: TButton;
+    procedure desatMiestaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure forceInputClick(Sender: TObject);
     procedure zadavanieTovaruClick(Sender: TObject);
@@ -38,6 +40,24 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 begin
 
+end;
+
+procedure TForm1.desatMiestaClick(Sender: TObject);
+var
+     salary: currency;
+     amount : real;
+begin
+     salary:= 10000.000000000000;
+     ShowMessage(CurrToStrF(salary, ffFixed, 2));
+
+      ThousandSeparator := ' ';
+      amount := 1234.567;
+      // Display the amount using the default decimal digits (2)
+      ShowMessage('Amount = '+Format('%m', [amount]));
+
+      // Redisplay the amount with 4 decimal digits
+      CurrencyDecimals := 4;
+      ShowMessage('Amount = '+Format('%m', [amount]));
 end;
 
 procedure TForm1.forceInputClick(Sender: TObject);
@@ -67,7 +87,7 @@ begin
   if odpadBool then begin
     odpadBool2:= tryStrToInt(value, odpadInt);
     if not odpadBool2 then begin
-      showMessage('zadaj CISLO');
+      showMessage('zadaj CISLO. CELE CISLO. A ne*er ma.');
     end else begin
       showMessage('Som zadany (' +intToStr(odpadInt)+')');
     end;

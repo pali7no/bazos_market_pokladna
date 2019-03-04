@@ -1,7 +1,7 @@
 object Pokladna: TPokladna
-  Left = 311
+  Left = 354
   Height = 427
-  Top = 188
+  Top = 152
   Width = 1055
   HorzScrollBar.Page = 1054
   VertScrollBar.Increment = 38
@@ -27,12 +27,12 @@ object Pokladna: TPokladna
     ColCount = 4
     Columns = <    
       item
-        Title.Caption = 'názov'
-        Width = 285
+        Title.Caption = 'kód'
+        Width = 73
       end    
       item
-        Title.Caption = 'kód'
-        Width = 65
+        Title.Caption = 'názov'
+        Width = 278
       end    
       item
         Title.Caption = 'cena'
@@ -49,8 +49,8 @@ object Pokladna: TPokladna
     TabOrder = 0
     OnClick = PonukaClick
     ColWidths = (
-      285
-      65
+      73
+      278
       67
       67
     )
@@ -259,7 +259,8 @@ object Pokladna: TPokladna
     TabOrder = 15
   end
   object Lista: TMainMenu
-    left = 496
+    left = 200
+    top = 344
     object odhlasPokladnika: TMenuItem
       Caption = 'Odhlas pokladnika'
       OnClick = odhlasPokladnikaClick
@@ -282,10 +283,9 @@ object Pokladna: TPokladna
     end
   end
   object nacitanieSuborov: TTimer
-    Enabled = False
     Interval = 100
     OnTimer = nacitanieSuborovTimer
-    left = 352
+    left = 280
     top = 344
   end
 end

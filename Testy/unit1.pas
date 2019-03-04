@@ -12,12 +12,14 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    stringCase: TButton;
     desatMiesta: TButton;
     zadavanieTovaru: TButton;
     forceInput: TButton;
     procedure desatMiestaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure forceInputClick(Sender: TObject);
+    procedure stringCaseClick(Sender: TObject);
     procedure zadavanieTovaruClick(Sender: TObject);
   private
 
@@ -79,6 +81,19 @@ begin
 
    // Show their name
    ShowMessage('Hello '+intToStr(odpadInt));
+end;
+
+procedure TForm1.stringCaseClick(Sender: TObject);
+var
+     r, stav: string;
+begin
+    stav:= inputbox('','',r);
+    case stav of
+    'vyhlPodlaKodu': showMessage('vyhlPodlaKodu');
+    'vyhlPodlaNazvu': showMessage('vyhlPodlaNazvu');
+
+    else showMessage('Blbost input.')
+    end;
 end;
 
 procedure TForm1.zadavanieTovaruClick(Sender: TObject);
