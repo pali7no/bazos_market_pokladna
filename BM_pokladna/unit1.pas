@@ -10,6 +10,8 @@ uses
      LCLType;
 const
   preskokKod = 4;
+  path = 'Z:\INFProjekt2019\TimA\';
+  //path = '';
   //NoSelection: TGridRect = (Left: 0; zobrazTOP: -1; Right: 0; Bottom: -1);
 
 type
@@ -36,7 +38,10 @@ type
   { TPokladna }
 
   TPokladna = class(TForm)
+    PokladnaLabel: TLabel;
+    logo: TImage;
     nacitanieSuborov: TTimer;
+    delayT: TTimer;
     verziaPanel: TPanel;
     zobrazTOP: TButton;
     celkCenaL: TLabel;
@@ -60,6 +65,7 @@ type
     vyhlPodlaNazvuEdit: TEdit;
     Ponuka: TStringGrid;
     Kosik: TStringGrid;
+    procedure delayTTimer(Sender: TObject);
     function jeSlovo(inputString: string): boolean;
     procedure menoPokladnikaClick(Sender: TObject);
     procedure nacitanieSuborovTimer(Sender: TObject);
@@ -98,7 +104,7 @@ type
     procedure vyhlPodlaNazvu(userInput: string; Sender: TObject);
     procedure zapisViacSKLADtxt(iVTovary: integer);
     //custom wait
-    procedure Delay(dt: DWORD);
+    procedure Delay(dt: QWORD);
     function dlzkaCisla(cislo: integer): integer;
     //lockovanie
     function verziaSuboru(subor: string): integer;
@@ -121,7 +127,6 @@ var
   sklad, tovar, cennik, statistiky: textFile;
   tovarov, kupenychTovarov: integer;
   pokladnik, ponukaStav: string;
-  prveNacitanie: boolean;
   //stavy ponukaStav:
   // => pri nacitanieSuborov zobrazit znova
   { TODO : keyWord pre vyhl }
@@ -130,6 +135,8 @@ var
   //vsetko, TOP
   //nic (nic sa nezozbrazuje)
   //uprava (nezobrazuj, prave upravujem)
+  prveNacitanie: boolean;
+  timerRepeat: qWord;
   celkCena: currency;
   topStrList: TStringList;
 
@@ -252,8 +259,10 @@ begin
          Application.MessageBox('Nacitavam...', '', BoxStyle);
 
          //MessageDlg('Test with no buttons',mtInformation,[],0);
-         delay(25);
+         delay(30);
      end;
+
+     logo.Picture.LoadFromFile(path + 'logo_transparent.bmp');
 
      //for i:=1 to 5 do begin
      //    Subory[i].trebaUpravit:= false;
@@ -267,13 +276,24 @@ begin
      //        Ponuka.Cells[sgStlpce,sgRiadky]:= intToStr(sgStlpce+sgRiadky+1);
 end;
 
-procedure TPokladna.Delay(dt: DWORD);
+procedure TPokladna.Delay(dt: QWORD);
 var
-  tc : DWORD;
+  tc : QWORD;
 begin
-  tc := GetTickCount;
-  while (GetTickCount < tc + dt) and (not Application.Terminated) do
-    Application.ProcessMessages;
+  //tc := GetTickCount64;
+  //while (GetTickCount64 < tc + dt) and (not Application.Terminated) do
+  //  Application.ProcessMessages;
+  timerRepeat:= 0;
+  delayT.Enabled:= true;
+  while (dt < timerRepeat * delayT.Interval) do begin
+     Application.ProcessMessages;
+  end;
+  timerRepeat:= 0;
+end;
+
+procedure TPokladna.delayTTimer(Sender: TObject);
+begin
+    inc(timerRepeat);
 end;
 
 procedure TPokladna.nacitanieCelejDatabazy;
@@ -1355,8 +1375,8 @@ begin
           closeFile(tovarLock);
 
           assignFile(skladLock, ('SKLAD_LOCK.txt'));
-         rewrite(skladLock);
-         closeFile(skladLock);
+          rewrite(skladLock);
+          closeFile(skladLock);
 
 
 
