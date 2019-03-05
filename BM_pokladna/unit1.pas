@@ -153,6 +153,7 @@ var
     odpadString, kodString, nazovString, kodNazovString: string;
     zadalMeno: boolean;
     katStrList: TStringList;
+    statLock: textFile;
 
 begin
     nacitanieSuborov.Enabled:= false;
@@ -249,17 +250,22 @@ begin
 
      ponukaStav:= 'vsetko';
      nacitanieSuborov.Enabled:= true;
-     delay(150);
+     //delay(150);
 
      while (fileExists(path + 'STATISTIKY_LOCK.txt')) do begin
          BoxStyle:= MB_ICONQUESTION + MB_RETRYCANCEL;
          Application.MessageBox('Nacitavam stats...', '', BoxStyle);
          delay(10);
      end;
-     //addStatStrList:= TStringList.Create;
-     //addStatStrList
+
+     assignFile(statLock, path + 'STATISTIKY_LOCK.txt');
+     rewrite(statLock);
+     closeFile(statLock);
      statStrList:= TStringList.Create;
      statStrList.LoadFromFile(path + 'STATISTIKY.txt');
+     deleteFile(path + 'STATISTIKY_LOCK.txt');
+
+     addStatStrList:= TStringList.Create;
 
      while (prveNacitanie = false) do begin
          //showMessage('Nacitavam...');
@@ -1008,7 +1014,7 @@ begin
     //priprava na pracu s statistiky
     repeat
        transID:= qword(10000000) + qword(random(89999999));
-    until not fileExists(path + 'uctenka_' +intToStr(transID));
+    until not fileExists(path + 'UCTENKY\' +  'uctenka_' +intToStr(transID));
     aktDatum:= now;
 
     //append(statistiky);
@@ -1022,11 +1028,12 @@ begin
     //flush(statistiky);
     //closeFile(statistiky);
 
-    statRiadkov:= strToInt(statStrList[0]) + kupenychTovarov;
-    statStrList[0]:= intToStr(statRiadkov);
+    //statStrList.LoadFromFile(path + 'STATISTIKY.txt');
+    //statRiadkov:= strToInt(statStrList[0]) + kupenychTovarov;
+    //statStrList[0]:= intToStr(statRiadkov);
 
     for iPredaj:=0 to kupenychTovarov-1 do begin
-        statStrList.Add('P;'+ intToStr(transID) +';'+
+        addStatStrList.Add('P;'+ intToStr(transID) +';'+
         intToStr(PKosik[iPredaj].kod) +';'+
         intToStr(PKosik[iPredaj].mnozstvo) +';'+
         floatToStr(PKosik[iPredaj].cenaKusPredaj * 100) +';'+
@@ -1109,7 +1116,7 @@ begin
 
     //formatfloat('0.0000', float)
 
-    uctStrList.SaveToFile(path + 'uctenka_' +intToStr(transID)+ '.txt');
+    uctStrList.SaveToFile(path + 'UCTENKY\' + 'uctenka_' +intToStr(transID)+ '.txt');
     uctStrList.Free;
     //assignFile(uctenka, 'uctenka_' +intToStr(transID));
     //rewrite(uctenka);
@@ -1528,7 +1535,7 @@ end;
 procedure TPokladna.upravaSuborovTimer(Sender: TObject);
 var
    verzia: TStringList;
-   iNewVerzie: integer;
+   iNewVerzie, iStatR, statRiadkov: integer;
    statLock: textFile;
 begin
    if (Subory[4].trebaUpravit) and not fileExists(path + 'STATISTIKY_LOCK.txt') then
@@ -1539,6 +1546,15 @@ begin
       rewrite(statLock);
       closeFile(statLock);
 
+      statStrList.LoadFromFile(path + 'STATISTIKY.txt');
+      statRiadkov:= strToInt(statStrList[0]) + addStatStrList.Count;
+      statStrList[0]:= intToStr(statRiadkov);
+
+      for iStatR:=0 to addStatStrList.Count-1 do begin
+         statStrList.Add(addStatStrList[iStatR]);
+      end;
+      addStatStrList.Free;
+
       statStrList.SaveToFile(path + 'STATISTIKY.txt');
 
       verzia:= TStringList.Create;
@@ -1546,6 +1562,7 @@ begin
       iNewVerzie:= strToInt(verzia[0]) + 1;
       verzia[0]:= intToStr(iNewVerzie);
       verzia.SaveToFile(path + 'STATISTIKY_VERZIA.txt');
+
       deleteFile(path + 'STATISTIKY_LOCK.txt');
    end;
 
