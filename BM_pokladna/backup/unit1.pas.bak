@@ -12,7 +12,6 @@ const
   preskokKod = 4;
   path = 'Z:\INFProjekt2019\TimA\';
   //path = '';
-  //NoSelection: TGridRect = (Left: 0; zobrazTOP: -1; Right: 0; Bottom: -1);
 
 type
   tovarTyp = record
@@ -42,10 +41,10 @@ type
     logo: TImage;
     nacitanieSuborov: TTimer;
     delayT: TTimer;
+    upravaSuborov: TTimer;
     verziaPanel: TPanel;
     zobrazTOP: TButton;
     celkCenaL: TLabel;
-    EditButton1: TEditButton;
     Lista: TMainMenu;
     Memo1: TMemo;
     koniec: TMenuItem;
@@ -72,6 +71,7 @@ type
     procedure odhlasPokladnikaClick(Sender: TObject);
     procedure PSScript1AfterExecute(Sender: TPSScript);
     procedure simpleReloadClick(Sender: TObject);
+    procedure upravaSuborovTimer(Sender: TObject);
     procedure zobrazTOPClick(Sender: TObject);
     procedure vyhlPodlaNazvuMenuClick(Sender: TObject);
     procedure vyhlPodlaKoduMenuClick(Sender: TObject);
@@ -138,7 +138,7 @@ var
   prveNacitanie: boolean;
   timerRepeat: qWord;
   celkCena: currency;
-  topStrList: TStringList;
+  topStrList, addStatStrList, statStrList: TStringList;
 
 implementation
 
@@ -233,10 +233,10 @@ begin
      prazdnyTovar.nazov:= '';
 
      ////pociatocne priradenie
-     //assignFile(sklad, 'SKLAD.txt');
-     //assignFile(tovar, 'TOVAR.txt');
-     //assignFile(cennik, 'CENNIK.txt');
-     //assignFile(statistiky, 'STATISTIKY.txt');
+     //assignFile(sklad, path + 'SKLAD.txt');
+     //assignFile(tovar, path + TOVAR.txt');
+     //assignFile(cennik, path + 'CENNIK.txt');
+     //assignFile(statistiky, path + 'STATISTIKY.txt');
      //
      ////ideme vyplnit TStringGrid Ponuka
      //nacitanieCelejDatabazy;
@@ -251,15 +251,25 @@ begin
      nacitanieSuborov.Enabled:= true;
      delay(150);
 
+     while (fileExists(path + 'STATISTIKY_LOCK.txt')) do begin
+         BoxStyle:= MB_ICONQUESTION + MB_RETRYCANCEL;
+         Application.MessageBox('Nacitavam stats...', '', BoxStyle);
+         delay(10);
+     end;
+     addStatStrList:= TStringList.Create;
+     addStatStrList
+     statStrList:= TStringList.Create;
+     statStrList.LoadFromFile(path + 'STATISTIKY.txt');
+
      while (prveNacitanie = false) do begin
          //showMessage('Nacitavam...');
          //Application.MessageBox(Application.Handle,'Nacitavam...',PChar(Application.Title),
          //   MB_OK or MB_ICONINFORMATION or MB_SYSTEMMODAL);
          BoxStyle:= MB_ICONQUESTION + MB_RETRYCANCEL;
-         Application.MessageBox('Nacitavam...', '', BoxStyle);
+         Application.MessageBox('Nacitavam databazu...', '', BoxStyle);
 
          //MessageDlg('Test with no buttons',mtInformation,[],0);
-         delay(25);
+         delay(30);
      end;
 
      logo.Picture.LoadFromFile(path + 'logo_transparent.bmp');
@@ -285,7 +295,7 @@ begin
   //  Application.ProcessMessages;
   timerRepeat:= 0;
   delayT.Enabled:= true;
-  while (dt < timerRepeat * 5) do begin
+  while (dt < timerRepeat * delayT.Interval) do begin
      Application.ProcessMessages;
   end;
   timerRepeat:= 0;
@@ -422,7 +432,7 @@ var
    iZnaku, iRiadku, bcPoz: integer;
 begin
     skladStrList:= TStringList.Create;
-    skladStrList.LoadFromFile('SKLAD.txt');
+    skladStrList.LoadFromFile(path + 'SKLAD.txt');
     //for iTovaru:=0 to tovarov do begin
     //    skladRiadok:= skladStrList[iTovaru];
     //    Memo1.Append(skladRiadok);
@@ -593,7 +603,7 @@ end;
 
 procedure TPokladna.zobrazTOPClick(Sender: TObject);
 var
-   iVTOP, iVTovary, iVPKosik: integer;
+   iVTOP, iVTovary, iVPKosik, BoxStyle: integer;
    jeVPKosik: boolean;
    fileTopStrList: TStringList;
 begin
@@ -602,9 +612,16 @@ begin
         exit;
      end;
 
+     while (fileExists('TOP_LOCK.txt')) do begin
+         BoxStyle:= MB_ICONQUESTION + MB_RETRYCANCEL;
+         Application.MessageBox('Nacitavam...', '', BoxStyle);
+         delay(30);
+     end;
 
      fileTopStrList:= TStringList.Create;
-     fileTopStrList.LoadFromFile('TOP.txt');
+     fileCreate(path + 'TOP_LOCK.txt');
+     fileTopStrList.LoadFromFile(path + 'TOP.txt');
+     deleteFile(path + 'TOP_LOCK.txt');
      //ak je TOP rovnaky
      if (fileTopStrList = topStrList) then begin
         exit;
@@ -973,7 +990,7 @@ var
    transID: qword;
    iPredaj, iTovaru: integer;
    aktDatum: TDateTime;
-   statStrList, skladStrList, uctStrList: TStringList;
+   skladStrList, uctStrList: TStringList;
    skladOldRiadok, skladNewRiadok, riadokUctu: string;
    uctenka: textFile;
 begin
@@ -991,7 +1008,7 @@ begin
     //priprava na pracu s statistiky
     repeat
        transID:= qword(10000000) + qword(random(89999999));
-    until not fileExists('uctenka_' +intToStr(transID));
+    until not fileExists(path + 'uctenka_' +intToStr(transID));
     aktDatum:= now;
 
     //append(statistiky);
@@ -1005,11 +1022,8 @@ begin
     //flush(statistiky);
     //closeFile(statistiky);
 
-    statStrList:= TStringList.Create;
-    statStrList.LoadFromFile('STATISTIKY.txt');
     statRiadkov:= strToInt(statStrList[0]) + kupenychTovarov;
     statStrList[0]:= intToStr(statRiadkov);
-    //statStrList.Text := StringReplace(statStrList.Text, '3', '4', [rfIgnoreCase]);
 
     for iPredaj:=0 to kupenychTovarov-1 do begin
         statStrList.Add('P;'+ intToStr(transID) +';'+
@@ -1018,12 +1032,11 @@ begin
         floatToStr(PKosik[iPredaj].cenaKusPredaj * 100) +';'+
         FormatDateTime('YYMMDD', aktDatum));
     end;
-    statStrList.SaveToFile('STATISTIKY.txt');
-    statStrList.Free;
+    Subory[4].trebaUpravit:= true; //upravi Timer
 
     //ubratie tovaru zo SKLAD.txt
     skladStrList:= TStringList.Create;
-    skladStrList.LoadFromFile('SKLAD.txt');
+    skladStrList.LoadFromFile(path + 'SKLAD.txt');
     for iPredaj:=0 to kupenychTovarov-1 do begin
         iVTovary:= 0;
         while (PKosik[iPredaj].kod <> Tovary[iVTovary].kod) do begin
@@ -1042,7 +1055,7 @@ begin
         skladStrList.Text := StringReplace(skladStrList.Text,
                           skladOldRiadok, skladNewRiadok, [rfIgnoreCase]);
     end;
-    skladStrList.SaveToFile('SKLAD.txt');
+    skladStrList.SaveToFile(path + 'SKLAD.txt');
     skladStrList.Free;
 
     //vytvorenie uctenka_[id_transakcie].txt
@@ -1096,14 +1109,14 @@ begin
 
     //formatfloat('0.0000', float)
 
-    uctStrList.SaveToFile('uctenka_' +intToStr(transID)+ '.txt');
+    uctStrList.SaveToFile(path + 'uctenka_' +intToStr(transID)+ '.txt');
     uctStrList.Free;
     //assignFile(uctenka, 'uctenka_' +intToStr(transID));
     //rewrite(uctenka);
     //closeFile(uctenka);
 
     //zrusenie nakupu
-    nacitanieCelejDatabazy;
+    //nacitanieCelejDatabazy;
     for iPredaj:=0 to kupenychTovarov-1 do begin
         PKosik[iPredaj].mnozstvo:= 0;
         PKosik[iPredaj].povMnozstvo:= -1;
@@ -1117,14 +1130,14 @@ var
    oldRiadok, newRiadok: string;
 begin
       skladStrList:= TStringList.Create;
-      skladStrList.LoadFromFile('SKLAD.txt');
+      skladStrList.LoadFromFile(path + 'SKLAD.txt');
       oldRiadok:= intToStr(Tovary[iVTovary].kod) + ';' +
                   intToStr(Tovary[iVTovary].povMnozstvo);
       newRiadok:= intToStr(Tovary[iVTovary].kod) + ';' +
                   intToStr(Tovary[iVTovary].mnozstvo);
       skladStrList.text:= stringReplace(skladStrList.text, oldRiadok,
                           newRiadok, [rfIgnoreCase]);
-      skladStrList.SaveToFile('SKLAD.txt');
+      skladStrList.SaveToFile(path + 'SKLAD.txt');
       skladStrList.Free;
       Tovary[iVTovary].povMnozstvo:= -1;
 end;
@@ -1354,9 +1367,9 @@ begin
          (Subory[1].verzia < skladAktVerzia)
       ) and
       (
-         not (fileExists('CENNIK_LOCK.txt')) and
-         not (fileExists('TOVAR_LOCK.txt')) and
-         not (fileExists('SKLAD_LOCK.txt'))
+         not (fileExists(path + 'CENNIK_LOCK.txt')) and
+         not (fileExists(path + 'TOVAR_LOCK.txt')) and
+         not (fileExists(path + 'SKLAD_LOCK.txt'))
       ) and
       (
          kupenychTovarov = 0
@@ -1366,15 +1379,15 @@ begin
               prveNacitanie:= true;
           end;
 
-          assignFile(cennikLock, ('CENNIK_LOCK.txt'));
+          assignFile(cennikLock, (path + 'CENNIK_LOCK.txt'));
           rewrite(cennikLock);
           closeFile(cennikLock);
 
-          assignFile(tovarLock, ('TOVAR_LOCK.txt'));
+          assignFile(tovarLock, (path + 'TOVAR_LOCK.txt'));
           rewrite(tovarLock);
           closeFile(tovarLock);
 
-          assignFile(skladLock, ('SKLAD_LOCK.txt'));
+          assignFile(skladLock, (path + 'SKLAD_LOCK.txt'));
           rewrite(skladLock);
           closeFile(skladLock);
 
@@ -1386,7 +1399,7 @@ begin
 
           //nacitanie CENNIK.txt
           cennikStrList:= TStringList.Create;
-          cennikStrList.LoadFromFile('CENNIK.txt');
+          cennikStrList.LoadFromFile(path + 'CENNIK.txt');
           tovarov:= strToInt(cennikStrList[0]);
           for iTovaru:=0 to tovarov-1 do begin
              iRiadku:= iTovaru + 1;
@@ -1397,7 +1410,7 @@ begin
              iVPonuke:= 1;
 
              while (iVPonuke < Ponuka.RowCount) and (Tovary[iTovaru].kod <>
-                   strToInt(Ponuka.Cells[1,iVPonuke])) do begin
+                   strToInt(Ponuka.Cells[0,iVPonuke])) do begin
                  inc(iVPonuke);
              end;
 
@@ -1435,11 +1448,11 @@ begin
              end;
          end;
          Subory[3].verzia:= cennikAktVerzia;
-         deleteFile('CENNIK_LOCK.txt');
+         deleteFile(path + 'CENNIK_LOCK.txt');
 
          //nacitanie TOVAR.txt
          tovarStrList:= TStringList.Create;
-         tovarStrList.LoadFromFile('TOVAR.txt');
+         tovarStrList.LoadFromFile(path + 'TOVAR.txt');
          //tovarov:= strToInt(tovarStrList[0]);
          //nemoze sa mi stat, ze mam iny pocet tovarov
          for iTovaru:=0 to tovarov-1 do begin
@@ -1455,7 +1468,7 @@ begin
              //end;
          end;
          Subory[2].verzia:= tovarAktVerzia;
-         deleteFile('TOVAR_LOCK.txt');
+         deleteFile(path + 'TOVAR_LOCK.txt');
 
          //nacitanie SKLAD.txt
          skladStrList:= TStringList.Create;
@@ -1475,11 +1488,11 @@ begin
              //end;
          end;
          Subory[1].verzia:= skladAktVerzia;
-         deleteFile('SKLAD_LOCK.txt');
+         deleteFile(path + 'SKLAD_LOCK.txt');
 
          //nacitaj Ponuku na zaklade ponukaStav
          while (ponukaStav = 'uprava') do begin
-             sleep(25);
+             delay(25);
          end;
 
          case ponukaStav of
@@ -1508,111 +1521,35 @@ begin
          verziaPanel.Caption:= 'Mam akt. verziu.';
    end;
 
-   ////nacitanie CENNIK.txt
-   //cennikAktVerzia:= verziaSuboru('CENNIK');
-   //if (not (fileExists('CENNIK_LOCK.txt'))) and
-   //        (Subory[3].verzia <> cennikAktVerzia) {and
-   //        //upravujeme iba pri prazdnom cenniku
-   //        (kupenychTovarov = 0)} then begin
-   //    //createFile(Subory[2].menoSuboru + '_LOCK.txt');
-   //    assignFile(lock, ('CENNIK_LOCK.txt'));
-   //    rewrite(lock);
-   //    closeFile(lock);
-   //    cennikStrList:= TStringList.Create;
-   //    cennikStrList.LoadFromFile('CENNIK.txt');
-   //    tovarov:= strToInt(cennikStrList[0]);
-   //    //nemoze sa mi stat, ze mam iny pocet tovarov
-   //    for iTovaru:=0 to tovarov-1 do begin
-   //        //neupravujem ceny tovarov, ktore su v kosiku
-   //        if (Tovary[iTovaru].iVKosiku <> -1) then begin
-   //            continue;
-   //        end;
-   //
-   //        iRiadku:= iTovaru + 1;
-   //        rCennik:= cennikStrList[iRiadku];
-   //
-   //        //neaktivny tovar (v cenniku iba kod)
-   //        if (length(rCennik) = 3) then begin
-   //            Tovary[iTovaru].jeAktivny:= false;
-   //            Tovary[iTovaru].kod:= strToInt(rCennik);
-   //
-   //            //ak bol tovar aktivny, poposuvam ponuku (iba ak nie je v cena)
-   //            if (Tovary[iTovaru].iVPonuke <> -1) then begin
-   //                for iPosun:= Tovary[iTovaru].iVPonuke+1 to
-   //                    Ponuka.RowCount - 2 do begin
-   //                        Ponuka.Rows[iPosun].Assign(Ponuka.Rows[iPosun+1]);
-   //                end;
-   //
-   //                for iPosun:= iTovaru+1 to tovarov-1 do begin
-   //                    if (Tovary[iPosun].iVPonuke <> -1) then begin
-   //                       Tovary[iPosun].iVPonuke:= Tovary[iPosun].iVPonuke - 1;
-   //                    end;
-   //                end;
-   //
-   //                //zmena posledneho
-   //                //Tovary[Ponuka.RowCount-1]:= prazdnyTovar;
-   //                Ponuka.RowCount:= Ponuka.RowCount - 1;
-   //
-   //                Tovary[iTovaru].iVPonuke:= -1;
-   //            end;
-   //        end else begin
-   //            //kod
-   //            bcPoz:= pos(';', rCennik);
-   //            Tovary[iTovaru].kod:= strToInt(copy(rCennik, 1, bcPoz - 1));
-   //            delete(rCennik, 1, bcPoz);
-   //
-   //            //cenaKusNakup (nepotrebna :) )
-   //            bcPoz:= pos(';',rCennik);
-   //            Tovary[iTovaru].cenaKusNakup:= strToCurr(copy(rCennik, 1, bcPoz - 1)) /100;
-   //            delete(rCennik, 1, bcPoz);
-   //
-   //            //cenaKusPredaj
-   //            Tovary[iTovaru].cenaKusPredaj:= strToCurr(rCennik) / 100;
-   //
-   //            if (Tovary[iTovaru].iVPonuke <> -1) then begin
-   //                Ponuka.Cells[1, Tovary[iTovaru].iVPonuke]:=
-   //                                intToStr(Tovary[iTovaru].kod);
-   //                Ponuka.Cells[2, Tovary[iTovaru].iVPonuke]:= currToStrF(
-   //                                Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
-   //            end;
-   //        end;
-   //    end;
-   //    Subory[3].verzia:= cennikAktVerzia;
-   //    deleteFile('CENNIK_LOCK.txt');
-   //end;
-   //
-   //  //nacitanie TOVAR.txt
-   //  tovarAktVerzia:= verziaSuboru('TOVAR');
-   //  if (not (fileExists('TOVAR_LOCK.txt'))) and
-   //          (Subory[2].verzia <> tovarAktVerzia) then begin
-   //      //createFile(Subory[2].menoSuboru + '_LOCK.txt');
-   //      assignFile(lock, ('TOVAR_LOCK.txt'));
-   //      rewrite(lock);
-   //      tovarStrList:= TStringList.Create;
-   //      tovarStrList.LoadFromFile('TOVAR.txt');
-   //      //tovarov:= strToInt(tovarStrList[0]);
-   //      //nemoze sa mi stat, ze mam iny pocet tovarov
-   //      for iTovaru:=0 to tovarov-1 do begin
-   //          rTovar:= tovarStrList[iTovaru+1];
-   //          Tovary[iTovaru].kod:= strToInt(copy(rTovar, 1, 3));
-   //          delete(rTovar, 1, 4);
-   //          Tovary[iTovaru].nazov:= rTovar;
-   //          if (Tovary[iTovaru].iVPonuke <> -1) then begin
-   //              Ponuka.Cells[0, Tovary[iTovaru].iVPonuke]:=
-   //                              Tovary[iTovaru].nazov;
-   //              Ponuka.Cells[1, Tovary[iTovaru].iVPonuke]:=
-   //                              intToStr(Tovary[iTovaru].kod);
-   //          end;
-   //          if (Tovary[iTovaru].iVKosiku <> -1) then begin
-   //              Kosik.Cells[0, Tovary[iTovaru].iVKosiku]:=
-   //                              Tovary[iTovaru].nazov;
-   //              Kosik.Cells[1, Tovary[iTovaru].iVKosiku]:=
-   //                             intToStr(Tovary[iTovaru].kod);
-   //          end;
-   //      end;
-   //      Subory[2].verzia:= tovarAktVerzia;
-   //      deleteFile('TOVAR_LOCK.txt');
-   //  end;
+   //speci nacitanie SKLAD.txt (moze aj pri neprazdnom kosiku)
+   //nacitam, co sa da, zvysok ignorujem
+end;
+
+procedure TPokladna.upravaSuborovTimer(Sender: TObject);
+var
+   verzia: TStringList;
+   iNewVerzie: integer;
+   statLock: textFile;
+begin
+   if (Subory[4].trebaUpravit) and not fileExists(path + 'STATISTIKY_LOCK.txt') then
+   begin
+      Subory[4].trebaUpravit:= false;
+
+      assignFile(statLock, (path + 'STATISTIKY_LOCK.txt'));
+      rewrite(statLock);
+      closeFile(statLock);
+
+      statStrList.SaveToFile(path + 'STATISTIKY.txt');
+
+      verzia:= TStringList.Create;
+      verzia.LoadFromFile(path + 'STATISTIKY_VERZIA.txt');
+      iNewVerzie:= strToInt(verzia[0]) + 1;
+      verzia[0]:= intToStr(iNewVerzie);
+      verzia.SaveToFile(path + 'STATISTIKY_VERZIA.txt');
+      deleteFile(path + 'STATISTIKY_LOCK.txt');
+   end;
+
+
 end;
 
 function TPokladna.verziaSuboru(subor: string): integer;
@@ -1621,7 +1558,7 @@ var
    suborStrList: TStringList;
 begin
      suborStrList:= TStringList.Create;
-     suborStrList.LoadFromFile(subor + '_VERZIA.txt');
+     suborStrList.LoadFromFile(path + subor + '_VERZIA.txt');
      exit(strToInt(suborStrList[0]));
 end;
 

@@ -10,9 +10,8 @@ uses
      LCLType;
 const
   preskokKod = 4;
-  //path = 'Z:\INFProjekt2019\TimA\';
-  path = '';
-  //NoSelection: TGridRect = (Left: 0; zobrazTOP: -1; Right: 0; Bottom: -1);
+  path = 'Z:\INFProjekt2019\TimA\';
+  //path = '';
 
 type
   tovarTyp = record
@@ -139,7 +138,7 @@ var
   prveNacitanie: boolean;
   timerRepeat: qWord;
   celkCena: currency;
-  topStrList, statStrList: TStringList;
+  topStrList, addStatStrList, statStrList: TStringList;
 
 implementation
 
@@ -252,13 +251,14 @@ begin
      nacitanieSuborov.Enabled:= true;
      delay(150);
 
-     statStrList:= TStringList.Create;
-
      while (fileExists(path + 'STATISTIKY_LOCK.txt')) do begin
          BoxStyle:= MB_ICONQUESTION + MB_RETRYCANCEL;
          Application.MessageBox('Nacitavam stats...', '', BoxStyle);
          delay(10);
      end;
+     //addStatStrList:= TStringList.Create;
+     //addStatStrList
+     statStrList:= TStringList.Create;
      statStrList.LoadFromFile(path + 'STATISTIKY.txt');
 
      while (prveNacitanie = false) do begin
@@ -1410,7 +1410,7 @@ begin
              iVPonuke:= 1;
 
              while (iVPonuke < Ponuka.RowCount) and (Tovary[iTovaru].kod <>
-                   strToInt(Ponuka.Cells[1,iVPonuke])) do begin
+                   strToInt(Ponuka.Cells[0,iVPonuke])) do begin
                  inc(iVPonuke);
              end;
 
@@ -1529,12 +1529,16 @@ procedure TPokladna.upravaSuborovTimer(Sender: TObject);
 var
    verzia: TStringList;
    iNewVerzie: integer;
+   statLock: textFile;
 begin
    if (Subory[4].trebaUpravit) and not fileExists(path + 'STATISTIKY_LOCK.txt') then
    begin
       Subory[4].trebaUpravit:= false;
 
-      fileCreate(path + 'STATISTIKY_LOCK.txt');
+      assignFile(statLock, (path + 'STATISTIKY_LOCK.txt'));
+      rewrite(statLock);
+      closeFile(statLock);
+
       statStrList.SaveToFile(path + 'STATISTIKY.txt');
 
       verzia:= TStringList.Create;
@@ -1554,7 +1558,7 @@ var
    suborStrList: TStringList;
 begin
      suborStrList:= TStringList.Create;
-     suborStrList.LoadFromFile(subor + '_VERZIA.txt');
+     suborStrList.LoadFromFile(path + subor + '_VERZIA.txt');
      exit(strToInt(suborStrList[0]));
 end;
 

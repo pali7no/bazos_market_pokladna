@@ -1,5 +1,5 @@
 object Pokladna: TPokladna
-  Left = 354
+  Left = 311
   Height = 465
   Top = 152
   Width = 1055
@@ -231,17 +231,6 @@ object Pokladna: TPokladna
     ParentColor = False
     ParentFont = False
   end
-  object EditButton1: TEditButton
-    Left = 380
-    Height = 23
-    Top = 376
-    Width = 103
-    ButtonWidth = 23
-    MaxLength = 0
-    NumGlyphs = 1
-    PasswordChar = #0
-    TabOrder = 13
-  end
   object zobrazTOP: TButton
     Left = 8
     Height = 25
@@ -249,7 +238,7 @@ object Pokladna: TPokladna
     Width = 75
     Caption = 'TOP'
     OnClick = zobrazTOPClick
-    TabOrder = 14
+    TabOrder = 13
   end
   object verziaPanel: TPanel
     Left = 16
@@ -257,7 +246,7 @@ object Pokladna: TPokladna
     Top = 384
     Width = 170
     Caption = 'Mam akt. verziu'
-    TabOrder = 15
+    TabOrder = 14
   end
   object logo: TImage
     Left = 8
@@ -303,7 +292,7 @@ object Pokladna: TPokladna
   object nacitanieSuborov: TTimer
     Interval = 100
     OnTimer = nacitanieSuborovTimer
-    left = 256
+    left = 264
     top = 400
   end
   object delayT: TTimer
@@ -311,6 +300,12 @@ object Pokladna: TPokladna
     Interval = 10
     OnTimer = delayTTimer
     left = 192
+    top = 400
+  end
+  object upravaSuborov: TTimer
+    Interval = 100
+    OnTimer = upravaSuborovTimer
+    left = 376
     top = 400
   end
 end
