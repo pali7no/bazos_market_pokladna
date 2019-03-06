@@ -10,8 +10,8 @@ uses
      LCLType;
 const
   preskokKod = 4;
-  //path = 'Z:\INFProjekt2019\TimA\';
-  path = '';
+  path = 'Z:\INFProjekt2019\TimA\';
+  //path = '';
 
 type
   tovarTyp = record
@@ -638,8 +638,8 @@ begin
 
      ponukaStav:= 'uprava';
      vycistitPonuku;
-     Ponuka.RowCount:= 6; //aj s nadpismi (1 Fixed row)
-     for iVTOP:= 0 to 4 do begin
+     Ponuka.RowCount:= topStrList.Count + 1; //aj s nadpismi (1 Fixed row)
+     for iVTOP:= 0 to topStrList.Count-1 do begin
          iVTovary:= 0;
          while (Tovary[iVTovary].kod <> strToInt(topStrList[iVTOP])) do begin
              inc(iVTovary);
@@ -1092,7 +1092,7 @@ begin
     uctStrList.Add('Jesenskeho 4/A, 811 02  Bratislava 1');
     uctStrList.Add(stringOfChar('_',sepLine));
 
-    uctStrList.Add('Datum: ' +stringOfChar(' ',medzK1 - 7 + 1)+ dateToStr(now));
+    uctStrList.Add('Datum: ' +stringOfChar(' ',medzK1 - 9)+ dateToStr(now));
     uctStrList.Add('Cas: ' +stringOfChar(' ', medzK1 - 5)+ timeToStr(now));
     uctStrList.Add('Cislo uctenky: ' +stringOfChar(' ', medzK1 - 15)+
                           intToStr(transID));
@@ -1142,8 +1142,9 @@ end;
 
 procedure TPokladna.zapisViacSKLADtxt(iVTovary: integer);
 var
-   skladStrList: TStringList;
+   skladStrList, verziaSkladStrList: TStringList;
    oldRiadok, newRiadok: string;
+   verziaSklad: integer;
 begin
       skladStrList:= TStringList.Create;
       skladStrList.LoadFromFile(path + 'SKLAD.txt');
@@ -1616,7 +1617,7 @@ begin
       for iStatR:=0 to addStatStrList.Count-1 do begin
          statStrList.Add(addStatStrList[iStatR]);
       end;
-      addStatStrList.Free;
+      addStatStrList.Clear;
 
       statStrList.SaveToFile(path + 'STATISTIKY.txt');
 

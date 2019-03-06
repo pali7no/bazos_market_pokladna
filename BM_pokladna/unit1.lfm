@@ -10,13 +10,14 @@ object Pokladna: TPokladna
   VertScrollBar.Tracking = True
   AutoScroll = True
   Caption = 'Pokladna'
-  ClientHeight = 442
+  ClientHeight = 445
   ClientWidth = 1055
   Color = 13420731
+  Font.Name = 'Times New Roman'
   Menu = Lista
   OnCreate = FormCreate
   ShowHint = True
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '1.4.0.4'
   object Ponuka: TStringGrid
     Left = 8
     Height = 240
@@ -48,6 +49,7 @@ object Pokladna: TPokladna
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll, goCellHints, goTruncCellHints]
     RowCount = 10
     TabOrder = 0
+    TitleFont.Name = 'Times New Roman'
     OnClick = PonukaClick
     ColWidths = (
       73
@@ -153,6 +155,7 @@ object Pokladna: TPokladna
     RowCount = 10
     ShowHint = True
     TabOrder = 8
+    TitleFont.Name = 'Times New Roman'
     OnClick = KosikClick
     ColWidths = (
       181
@@ -222,9 +225,9 @@ object Pokladna: TPokladna
   end
   object celkCenaL: TLabel
     Left = 616
-    Height = 23
+    Height = 19
     Top = 360
-    Width = 231
+    Width = 206
     Caption = 'spolu cely nakup: 0,00 €'
     Font.Height = -19
     Font.Name = '@cour'
@@ -256,10 +259,10 @@ object Pokladna: TPokladna
   end
   object PokladnaLabel: TLabel
     Left = 416
-    Height = 61
+    Height = 71
     Top = 2
-    Width = 235
-    Caption = 'Pokladňa'
+    Width = 289
+    Caption = 'POKLADŇA'
     Font.Height = -53
     Font.Style = [fsBold]
     ParentColor = False

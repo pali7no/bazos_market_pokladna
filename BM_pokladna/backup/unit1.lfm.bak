@@ -13,6 +13,7 @@ object Pokladna: TPokladna
   ClientHeight = 445
   ClientWidth = 1055
   Color = 13420731
+  Font.Name = 'Times New Roman'
   Menu = Lista
   OnCreate = FormCreate
   ShowHint = True
@@ -48,6 +49,7 @@ object Pokladna: TPokladna
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goSmoothScroll, goCellHints, goTruncCellHints]
     RowCount = 10
     TabOrder = 0
+    TitleFont.Name = 'Times New Roman'
     OnClick = PonukaClick
     ColWidths = (
       73
@@ -103,7 +105,7 @@ object Pokladna: TPokladna
   end
   object vyhlPodlaKoduEdit: TEdit
     Left = 160
-    Height = 23
+    Height = 27
     Hint = 'vyhlPodlaKodu'
     Top = 16
     Width = 120
@@ -115,7 +117,7 @@ object Pokladna: TPokladna
   end
   object vyhlPodlaNazvuEdit: TEdit
     Left = 160
-    Height = 23
+    Height = 27
     Hint = 'vyhlPodlaNazvu'
     Top = 56
     Width = 120
@@ -153,6 +155,7 @@ object Pokladna: TPokladna
     RowCount = 10
     ShowHint = True
     TabOrder = 8
+    TitleFont.Name = 'Times New Roman'
     OnClick = KosikClick
     ColWidths = (
       181
@@ -258,8 +261,8 @@ object Pokladna: TPokladna
     Left = 416
     Height = 71
     Top = 2
-    Width = 233
-    Caption = 'Pokladňa'
+    Width = 289
+    Caption = 'POKLADŇA'
     Font.Height = -53
     Font.Style = [fsBold]
     ParentColor = False
