@@ -10,13 +10,13 @@ object Pokladna: TPokladna
   VertScrollBar.Tracking = True
   AutoScroll = True
   Caption = 'Pokladna'
-  ClientHeight = 445
+  ClientHeight = 442
   ClientWidth = 1055
   Color = 13420731
   Menu = Lista
   OnCreate = FormCreate
   ShowHint = True
-  LCLVersion = '1.4.0.4'
+  LCLVersion = '1.8.2.0'
   object Ponuka: TStringGrid
     Left = 8
     Height = 240
@@ -103,7 +103,7 @@ object Pokladna: TPokladna
   end
   object vyhlPodlaKoduEdit: TEdit
     Left = 160
-    Height = 23
+    Height = 27
     Hint = 'vyhlPodlaKodu'
     Top = 16
     Width = 120
@@ -115,7 +115,7 @@ object Pokladna: TPokladna
   end
   object vyhlPodlaNazvuEdit: TEdit
     Left = 160
-    Height = 23
+    Height = 27
     Hint = 'vyhlPodlaNazvu'
     Top = 56
     Width = 120
@@ -222,9 +222,9 @@ object Pokladna: TPokladna
   end
   object celkCenaL: TLabel
     Left = 616
-    Height = 19
+    Height = 23
     Top = 360
-    Width = 206
+    Width = 231
     Caption = 'spolu cely nakup: 0,00 €'
     Font.Height = -19
     Font.Name = '@cour'
@@ -256,9 +256,9 @@ object Pokladna: TPokladna
   end
   object PokladnaLabel: TLabel
     Left = 416
-    Height = 71
+    Height = 61
     Top = 2
-    Width = 233
+    Width = 235
     Caption = 'Pokladňa'
     Font.Height = -53
     Font.Style = [fsBold]

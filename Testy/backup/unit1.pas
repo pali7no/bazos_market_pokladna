@@ -12,12 +12,16 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    nothingToStringReplace: TButton;
+    stringCase: TButton;
     desatMiesta: TButton;
     zadavanieTovaru: TButton;
     forceInput: TButton;
     procedure desatMiestaClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure forceInputClick(Sender: TObject);
+    procedure nothingToStringReplaceClick(Sender: TObject);
+    procedure stringCaseClick(Sender: TObject);
     procedure zadavanieTovaruClick(Sender: TObject);
   private
 
@@ -79,6 +83,35 @@ begin
 
    // Show their name
    ShowMessage('Hello '+intToStr(odpadInt));
+end;
+
+procedure TForm1.nothingToStringReplaceClick(Sender: TObject);
+var
+ before, after : TSTringList;
+
+begin
+     before:= TStringList.Create;
+     after:= TStringList.Create;
+     // Try to replace all occurrences of a or A to THE
+     before.Add('This is a way to live A big life');
+
+     after.Text  := stringreplace(Before.Text, ' a ', ' THE ',
+                             [rfReplaceAll, rfIgnoreCase]);
+     ShowMessage('Before = '+before[0]);
+     ShowMessage('After  = '+after[0]);
+end;
+
+procedure TForm1.stringCaseClick(Sender: TObject);
+var
+     r, stav: string;
+begin
+    stav:= inputbox('','',r);
+    case stav of
+    'vyhlPodlaKodu': showMessage('vyhlPodlaKodu');
+    'vyhlPodlaNazvu': showMessage('vyhlPodlaNazvu');
+
+    else showMessage('Blbost input.')
+    end;
 end;
 
 procedure TForm1.zadavanieTovaruClick(Sender: TObject);

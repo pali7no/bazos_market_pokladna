@@ -10,8 +10,8 @@ uses
      LCLType;
 const
   preskokKod = 4;
-  path = 'Z:\INFProjekt2019\TimA\';
-  //path = '';
+  //path = 'Z:\INFProjekt2019\TimA\';
+  path = '';
 
 type
   tovarTyp = record
@@ -138,7 +138,7 @@ var
   prveNacitanie: boolean;
   timerRepeat: qWord;
   celkCena: currency;
-  topStrList, addStatStrList, statStrList: TStringList;
+  topStrList, addStatStrList, statStrList, zmenaSkladStrList: TStringList;
 
 implementation
 
@@ -266,6 +266,7 @@ begin
      deleteFile(path + 'STATISTIKY_LOCK.txt');
 
      addStatStrList:= TStringList.Create;
+     zmenaSkladStrList:= TStringList.Create;
 
      while (prveNacitanie = false) do begin
          //showMessage('Nacitavam...');
@@ -992,11 +993,11 @@ procedure TPokladna.zaplatitClick(Sender: TObject);
 var
    riadkov, statRiadkov, povMnozstvoSKLADtxt, iVTovary,
      medzK1, medzK11, medzK2, medzE, sepLine, dlzCisla, chcePlatit,
-     odsadenieLoga: integer;
+     odsadenieLoga, verziaSklad: integer;
    transID: qword;
    iPredaj, iTovaru: integer;
    aktDatum: TDateTime;
-   skladStrList, uctStrList: TStringList;
+   skladStrList, uctStrList, verziaSkladStrList: TStringList;
    skladOldRiadok, skladNewRiadok, riadokUctu: string;
    uctenka: textFile;
 begin
@@ -1064,6 +1065,14 @@ begin
     end;
     skladStrList.SaveToFile(path + 'SKLAD.txt');
     skladStrList.Free;
+
+    //easy zvysenie verzie SKLAD.txt
+    verziaSkladStrList:= TStringList.Create;
+    verziaSkladStrList.LoadFromFile(path + 'SKLAD_VERZIA.txt');
+    verziaSklad:= strToInt(verziaSkladStrList[0]) + 1;
+    verziaSkladStrList[0]:= intToStr(verziaSklad);
+    Subory[1].verzia:= verziaSklad;
+    verziaSkladStrList.SaveToFile(path + 'SKLAD_VERZIA.txt');
 
     //vytvorenie uctenka_[id_transakcie].txt
     odsadenieLoga:= 16;
@@ -1147,6 +1156,14 @@ begin
       skladStrList.SaveToFile(path + 'SKLAD.txt');
       skladStrList.Free;
       Tovary[iVTovary].povMnozstvo:= -1;
+
+      //easy zvysenie verzie SKLAD.txt
+      verziaSkladStrList:= TStringList.Create;
+      verziaSkladStrList.LoadFromFile(path + 'SKLAD_VERZIA.txt');
+      verziaSklad:= strToInt(verziaSkladStrList[0]) + 1;
+      verziaSkladStrList[0]:= intToStr(verziaSklad);
+      Subory[1].verzia:= verziaSklad;
+      verziaSkladStrList.SaveToFile(path + 'SKLAD_VERZIA.txt');
 end;
 
 procedure TPokladna.vyhlPodlaKoduEditClick(Sender: TObject);
@@ -1353,7 +1370,7 @@ var
    lock, cennikLock, tovarLock, skladLock: textFile;
    tovarStrList, cennikStrList, skladStrList: TStringList;
    iTovaru, tovarAktVerzia, cennikAktVerzia, skladAktVerzia, iRiadku, bcPoz,
-     iPosun, iVPonuke: integer;
+     iPosun, iVPonuke, hlKod, iVTovary: integer;
    rTovar, rCennik, rSklad: string;
 begin
    //nove easy nacitanie - lockujem vsetky naraz, predpokladam - rovnaky riadok
@@ -1366,6 +1383,8 @@ begin
       (Subory[2].verzia < tovarAktVerzia) or
       (Subory[1].verzia < skladAktVerzia) then begin
        verziaPanel.Caption:= 'Nemam akt. verziu.';
+   end else begin
+       verziaPanel.Caption:= 'Mam akt. verziu.';
    end;
 
    if (
@@ -1398,15 +1417,22 @@ begin
           rewrite(skladLock);
           closeFile(skladLock);
 
+          cennikStrList:= TStringList.Create;
+          cennikStrList.LoadFromFile(path + 'CENNIK.txt');
+          tovarStrList:= TStringList.Create;
+          tovarStrList.LoadFromFile(path + 'TOVAR.txt');
+          skladStrList:= TStringList.Create;
+          skladStrList.LoadFromFile(path + 'SKLAD.txt');
 
+          deleteFile(path + 'CENNIK_LOCK.txt');
+          deleteFile(path + 'TOVAR_LOCK.txt');
+          deleteFile(path + 'SKLAD_LOCK.txt');
 
           for iTovaru:=0 to tovarov-1 do begin
               Tovary[iTovaru]:= prazdnyTovar;
           end;
 
           //nacitanie CENNIK.txt
-          cennikStrList:= TStringList.Create;
-          cennikStrList.LoadFromFile(path + 'CENNIK.txt');
           tovarov:= strToInt(cennikStrList[0]);
           for iTovaru:=0 to tovarov-1 do begin
              iRiadku:= iTovaru + 1;
@@ -1450,16 +1476,13 @@ begin
                  //    Ponuka.Cells[1, Tovary[iTovaru].iVPonuke]:=
                  //                    intToStr(Tovary[iTovaru].kod);
                  //    Ponuka.Cells[2, Tovary[iTovaru].iVPonuke]:= currToStrF(
-                 //                    Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
+                 //               iVTovary     Tovary[iTovaru].cenaKusPredaj, ffFixed, 2);
                  //end;
              end;
          end;
          Subory[3].verzia:= cennikAktVerzia;
-         deleteFile(path + 'CENNIK_LOCK.txt');
 
          //nacitanie TOVAR.txt
-         tovarStrList:= TStringList.Create;
-         tovarStrList.LoadFromFile(path + 'TOVAR.txt');
          //tovarov:= strToInt(tovarStrList[0]);
          //nemoze sa mi stat, ze mam iny pocet tovarov
          for iTovaru:=0 to tovarov-1 do begin
@@ -1475,11 +1498,8 @@ begin
              //end;
          end;
          Subory[2].verzia:= tovarAktVerzia;
-         deleteFile(path + 'TOVAR_LOCK.txt');
 
          //nacitanie SKLAD.txt
-         skladStrList:= TStringList.Create;
-         skladStrList.LoadFromFile('SKLAD.txt');
          //skladov:= strToInt(skladStrList[0]);
          //nemoze sa mi stat, ze mam iny pocet skladov
          for iTovaru:=0 to tovarov-1 do begin
@@ -1495,7 +1515,6 @@ begin
              //end;
          end;
          Subory[1].verzia:= skladAktVerzia;
-         deleteFile(path + 'SKLAD_LOCK.txt');
 
          //nacitaj Ponuku na zaklade ponukaStav
          while (ponukaStav = 'uprava') do begin
@@ -1522,13 +1541,57 @@ begin
                  zobrazTOPClick(nacitanieSuborov);
              end;
 
-             else showMessage('CRASH! Zla ponukaStav.');
+             else showMessage('CRASH! Zla ponukaStav. (napr. vyhl)');
          end;
+         //speci nacitanie SKLAD.txt (moze aj pri neprazdnom kosiku)
+   end
+   else if (Subory[1].verzia < skladAktVerzia) and
+           not fileExists(path + 'SKLAD_LOCK.txt') then
+   begin
+         assignFile(skladLock, (path + 'SKLAD_LOCK.txt'));
+         rewrite(skladLock);
+         closeFile(skladLock);
 
-         verziaPanel.Caption:= 'Mam akt. verziu.';
+         skladStrList:= TStringList.Create;
+         skladStrList.LoadFromFile('SKLAD.txt');
+
+         deleteFile(path + 'SKLAD_LOCK.txt');
+
+         //nacitam vs. zmenim, co sa da (nevymazavam)
+         for iRiadku:=1 to skladStrList.Count-1 do begin
+             rSklad:= skladStrList[iRiadku];
+             hlKod:= strToInt(copy(rSklad, 1, 3));
+             delete(rSklad, 1, 4);
+             iVTovary:= 0;
+             while (iVTovary < tovarov) and (Tovary[iVTovary].kod <> hlKod) do begin
+                inc(iVTovary);
+             end;
+             //ak sa nachadza v Tovary
+             if (iVTovary < tovarov) then begin
+                if (Tovary[iVTovary].iVKosiku = -1) then begin
+                    Tovary[iVTovary].mnozstvo:= strToInt(rSklad);
+                    //ak nechcel privela
+                end else if (Tovary[iVTovary].povMnozstvo = -1) then begin
+                     Tovary[iVTovary].mnozstvo:= strToInt(rSklad) -
+                       PKosik[Tovary[iVTovary].iVKosiku].mnozstvo;
+                end else begin
+                     //teraz neplati Tovary[iVTovary].mnozstvo +
+                     //PKosik[Tovary[iVTovary].iVKosiku].mnozstvo =  strToInt(rSklad)
+                     Tovary[iVTovary].mnozstvo:= strToInt(rSklad) -
+                        Tovary[iVTovary].povMnozstvo;
+                     Tovary[iVTovary].povMnozstvo:= strToInt(rSklad);
+                end;
+             end;
+             if (Tovary[iVTovary].iVPonuke <> -1) then begin
+                 Ponuka.Cells[3, Tovary[iVTovary].iVPonuke]:=
+                                 intToStr(Tovary[iVTovary].mnozstvo);
+             end;
+         end;
+         Subory[1].verzia:= skladAktVerzia;
    end;
 
-   //speci nacitanie SKLAD.txt (moze aj pri neprazdnom kosiku)
+
+
    //nacitam, co sa da, zvysok ignorujem
 end;
 

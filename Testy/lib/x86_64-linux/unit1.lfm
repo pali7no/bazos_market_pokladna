@@ -44,4 +44,13 @@ object Form1: TForm1
     OnClick = stringCaseClick
     TabOrder = 3
   end
+  object nothingToStringReplace: TButton
+    Left = 16
+    Height = 25
+    Top = 176
+    Width = 176
+    Caption = 'nothingToStringReplace'
+    OnClick = nothingToStringReplaceClick
+    TabOrder = 4
+  end
 end

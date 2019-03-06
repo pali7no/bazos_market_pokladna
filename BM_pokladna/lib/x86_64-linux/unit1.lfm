@@ -292,7 +292,7 @@ object Pokladna: TPokladna
   object nacitanieSuborov: TTimer
     Interval = 100
     OnTimer = nacitanieSuborovTimer
-    left = 256
+    left = 264
     top = 400
   end
   object delayT: TTimer
